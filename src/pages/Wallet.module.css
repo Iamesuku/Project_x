@@ -1,0 +1,93 @@
+.page { padding-top: 66px; min-height: 100vh; background: var(--off-white); padding-bottom: 80px; }
+.header { display: flex; align-items: flex-end; justify-content: space-between; padding-top: 56px; margin-bottom: 36px; }
+.eyebrow { font-size: 11px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+.title { font-family: var(--font-display); font-size: clamp(34px,4vw,50px); font-weight: 300; color: var(--black); }
+.title em { font-style: italic; }
+
+/* ── Stat cards ── */
+.statsRow { display: grid; grid-template-columns: 1.4fr 1fr 1fr 1fr; gap: 14px; margin-bottom: 24px; }
+.statCard { background: var(--white); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 28px 24px; display: flex; flex-direction: column; gap: 6px; }
+.statMain { background: var(--black); border-color: var(--black); }
+.statMain .statLabel { color: rgba(255,255,255,0.45); }
+.statMain .statValue { color: var(--white); }
+.statMain .statSub { color: rgba(255,255,255,0.35); }
+.statLabel { font-size: 11.5px; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
+.statValue { font-family: var(--font-display); font-size: 36px; font-weight: 600; color: var(--black); line-height: 1; margin: 4px 0; }
+.statOrange { color: #92400e; }
+.statGreen  { color: var(--success); }
+.statSub { font-size: 12px; color: var(--muted); }
+.statActions { display: flex; gap: 10px; margin-top: 16px; }
+.actionBtn { font-size: 13px; font-weight: 500; padding: 9px 18px; background: var(--white); color: var(--black); border-radius: var(--radius-xl); transition: background 0.2s, transform 0.15s; }
+.actionBtn:hover { background: var(--off-white); transform: translateY(-1px); }
+.actionOutline { background: transparent; color: rgba(255,255,255,0.7); border: 1px solid rgba(255,255,255,0.25); }
+.actionOutline:hover { background: rgba(255,255,255,0.1); color: var(--white); }
+.actionSmall { font-size: 12.5px; padding: 7px 14px; background: var(--off-white); color: var(--black); border-radius: var(--radius-xl); border: 1px solid var(--border); margin-top: 10px; transition: border-color 0.2s; }
+.actionSmall:hover { border-color: var(--black); }
+
+/* ── Escrow banner ── */
+.escrowBanner { background: var(--warning-bg); border: 1px solid #fcd34d; border-radius: var(--radius-lg); padding: 20px 24px; display: flex; align-items: center; justify-content: space-between; gap: 20px; margin-bottom: 36px; }
+.escrowLeft { display: flex; align-items: flex-start; gap: 14px; }
+.escrowIcon { font-size: 20px; flex-shrink: 0; margin-top: 2px; }
+.escrowTitle { font-size: 14px; font-weight: 600; color: var(--warning); margin-bottom: 4px; }
+.escrowSub { font-size: 13px; color: #78350f; line-height: 1.5; }
+.escrowBtn { font-size: 13px; font-weight: 500; color: var(--warning); border: 1px solid #fcd34d; padding: 9px 18px; border-radius: var(--radius-xl); white-space: nowrap; transition: background 0.2s; }
+.escrowBtn:hover { background: rgba(0,0,0,0.04); }
+
+/* ── History ── */
+.historySection { background: var(--white); border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; margin-bottom: 32px; }
+.historyHead { display: flex; align-items: center; justify-content: space-between; padding: 24px 28px; border-bottom: 1px solid var(--border); flex-wrap: wrap; gap: 14px; }
+.historyTitle { font-size: 16px; font-weight: 600; color: var(--black); }
+.filterGroup { display: flex; gap: 6px; flex-wrap: wrap; }
+.filterBtn { font-size: 12.5px; padding: 6px 14px; border-radius: var(--radius-xl); border: 1px solid var(--border); color: var(--mid); transition: all 0.2s; }
+.filterBtn:hover { border-color: var(--black); color: var(--black); }
+.filterActive { background: var(--black); color: var(--white); border-color: var(--black); font-weight: 500; }
+.txList { display: flex; flex-direction: column; }
+.txRow { display: flex; align-items: center; gap: 16px; padding: 18px 28px; border-bottom: 1px solid var(--border); transition: background 0.15s; }
+.txRow:last-child { border-bottom: none; }
+.txRow:hover { background: var(--off-white); }
+.txIcon { width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 15px; flex-shrink: 0; }
+.txIcon_green  { background: var(--success-bg); color: var(--success); }
+.txIcon_red    { background: var(--danger-bg);  color: var(--danger); }
+.txIcon_orange { background: var(--warning-bg); color: var(--warning); }
+.txInfo { flex: 1; min-width: 0; }
+.txDesc { font-size: 14px; font-weight: 500; color: var(--black); }
+.txMeta { font-size: 12px; color: var(--muted); margin-top: 2px; }
+.txRight { text-align: right; flex-shrink: 0; }
+.txAmount { font-size: 15px; font-weight: 600; }
+.txPos { color: var(--success); }
+.txNeg { color: var(--danger); }
+.txStatus { display: block; font-size: 11px; font-weight: 500; letter-spacing: 0.04em; text-transform: uppercase; margin-top: 3px; }
+.txStatus_completed { color: var(--success); }
+.txStatus_pending   { color: var(--warning); }
+.emptyTx { padding: 40px 28px; font-size: 14px; color: var(--muted); text-align: center; }
+
+/* ── Info grid ── */
+.infoGrid { display: grid; grid-template-columns: repeat(3,1fr); gap: 14px; }
+.infoCard { background: var(--white); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 28px 24px; display: flex; flex-direction: column; gap: 10px; }
+.infoIcon { font-size: 22px; color: var(--black); }
+.infoTitle { font-size: 15px; font-weight: 600; color: var(--black); }
+.infoBody { font-size: 13.5px; font-weight: 300; color: var(--mid); line-height: 1.65; }
+
+/* ── Modal ── */
+.overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); z-index: 200; display: flex; align-items: center; justify-content: center; padding: 20px; animation: fadeIn 0.2s ease; }
+.modal { background: var(--white); border-radius: var(--radius-lg); width: 100%; max-width: 420px; box-shadow: var(--shadow-lg); animation: fadeUp 0.3s var(--ease-out); overflow: hidden; }
+.modalHead { display: flex; align-items: center; justify-content: space-between; padding: 20px 24px; border-bottom: 1px solid var(--border); }
+.modalTitle { font-size: 16px; font-weight: 600; color: var(--black); }
+.modalClose { width: 28px; height: 28px; border-radius: 50%; background: var(--off-white); color: var(--mid); font-size: 13px; display: flex; align-items: center; justify-content: center; transition: background 0.2s; }
+.modalClose:hover { background: var(--border); }
+.modalBody { padding: 28px 24px; display: flex; flex-direction: column; gap: 16px; }
+.modalLabel { font-size: 14px; color: var(--mid); }
+.amountWrap { display: flex; align-items: center; border: 1.5px solid var(--black); border-radius: var(--radius-md); overflow: hidden; }
+.amountPrefix { padding: 13px 16px; background: var(--off-white); font-size: 16px; font-weight: 500; color: var(--mid); border-right: 1px solid var(--border); }
+.amountInput { flex: 1; padding: 13px 16px; font-size: 20px; font-weight: 300; font-family: var(--font-display); color: var(--black); border: none; outline: none; background: transparent; }
+.amountErr { font-size: 12.5px; color: var(--danger); }
+.presets { display: flex; gap: 8px; flex-wrap: wrap; }
+.preset { font-size: 13px; font-weight: 500; padding: 7px 16px; border: 1px solid var(--border); border-radius: var(--radius-xl); color: var(--mid); transition: all 0.2s; }
+.preset:hover { border-color: var(--black); color: var(--black); }
+.maxHint { font-size: 12.5px; color: var(--muted); }
+.maxHint strong { color: var(--black); }
+.modalAction { padding: 13px; background: var(--black); color: var(--white); border-radius: var(--radius-md); font-size: 15px; font-weight: 500; transition: background 0.2s, transform 0.15s; }
+.modalAction:hover { background: var(--charcoal); transform: translateY(-1px); }
+
+@media (max-width: 1000px) { .statsRow { grid-template-columns: 1fr 1fr; } .infoGrid { grid-template-columns: 1fr; } }
+@media (max-width: 600px) { .statsRow { grid-template-columns: 1fr; } .historyHead { flex-direction: column; align-items: flex-start; } .escrowBanner { flex-direction: column; } }
