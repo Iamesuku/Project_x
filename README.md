@@ -1,4 +1,4 @@
-# NEXUS — Freelance & Hiring Platform
+# NEXUS — 
 
 A complete, production-ready React SPA simulating a full freelance marketplace with escrow wallet.
 
