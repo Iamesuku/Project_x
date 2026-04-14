@@ -1,20 +1,24 @@
-// ── Auth Service — Task 2 ─────────────────────────────────────────────────
+// ── Auth Service ──────────────────────────────────────────────────────────
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   signOut,
   onAuthStateChanged,
   sendPasswordResetEmail,
+  GoogleAuthProvider,
+  signInWithPopup,
 } from 'firebase/auth'
 import {
   doc,
   setDoc,
+  getDoc,
   serverTimestamp,
 } from 'firebase/firestore'
 import { auth, db } from './config'
 
-// Derive up-to-2-character initials from a full name
+// Derive up-to-2-character initials from a name or email
 function getInitials(name) {
+  if (!name) return 'U'
   return name
     .split(' ')
     .map(w => w[0])
@@ -23,22 +27,13 @@ function getInitials(name) {
     .slice(0, 2)
 }
 
-/**
- * signUp — creates a Firebase Auth user, then attempts Firestore writes.
- * Firestore writes are best-effort: if they fail (e.g. security rules not yet
- * configured), the Auth account is still kept so the user can log in.
- * @returns {import('firebase/auth').User}
- */
-export async function signUp(name, email, password, role) {
-  const cred = await createUserWithEmailAndPassword(auth, email, password)
-  const { uid } = cred.user
-
-  // Best-effort Firestore writes — do NOT roll back auth if these fail
+// ── Write a new user doc + wallet (used on first-time sign-in) ────────────
+async function createUserDoc(uid, { name, email, avatar, role = 'client' }) {
   try {
     await setDoc(doc(db, 'users', uid), {
       name,
       email,
-      avatar:       getInitials(name),
+      avatar,
       role,
       bio:          '',
       location:     '',
@@ -48,28 +43,69 @@ export async function signUp(name, email, password, role) {
       reviewCount:  0,
       completedJobs: 0,
       memberSince:  serverTimestamp(),
-    })
+    }, { merge: true })   // merge so re-logins don't wipe existing data
   } catch (err) {
-    console.warn('[NEXUS] Could not write user profile to Firestore:', err.message,
-      '\nThis is usually a Firestore rules issue. Auth account was still created.')
+    console.warn('[NEXUS] Could not write user profile to Firestore:', err.message)
   }
 
   try {
-    await setDoc(doc(db, 'wallets', uid), {
-      balance:  600,   // seed balance so new users can explore the platform
-      escrow:   200,
-      earned:   0,
-      currency: 'NGN',
-    })
+    // Only seed wallet if it doesn't already exist
+    const walletRef = doc(db, 'wallets', uid)
+    const existing  = await getDoc(walletRef)
+    if (!existing.exists()) {
+      await setDoc(walletRef, {
+        balance:  600,
+        escrow:   0,
+        earned:   0,
+        currency: 'NGN',
+      })
+    }
   } catch (err) {
     console.warn('[NEXUS] Could not write wallet to Firestore:', err.message)
   }
+}
+
+/**
+ * signInWithGoogle — opens a Google auth popup, then upserts the Firestore
+ * user doc so data is always available after login.
+ * @returns {import('firebase/auth').User}
+ */
+export async function signInWithGoogle() {
+  const provider = new GoogleAuthProvider()
+  provider.setCustomParameters({ prompt: 'select_account' })
+  const cred = await signInWithPopup(auth, provider)
+  const { uid, displayName, email, photoURL } = cred.user
+
+  await createUserDoc(uid, {
+    name:   displayName || email?.split('@')[0] || 'User',
+    email:  email || '',
+    avatar: photoURL || getInitials(displayName || email || 'U'),
+  })
 
   return cred.user
 }
 
 /**
- * logIn — signs in an existing user.
+ * signUp — creates an Email/Password Firebase Auth user, then writes
+ * Firestore docs.  Auth is kept even if Firestore writes fail.
+ * @returns {import('firebase/auth').User}
+ */
+export async function signUp(name, email, password, role) {
+  const cred = await createUserWithEmailAndPassword(auth, email, password)
+  const { uid } = cred.user
+
+  await createUserDoc(uid, {
+    name,
+    email,
+    avatar: getInitials(name),
+    role,
+  })
+
+  return cred.user
+}
+
+/**
+ * logIn — signs in an existing email/password user.
  * @returns {import('firebase/auth').User}
  */
 export async function logIn(email, password) {
