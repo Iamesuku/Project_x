@@ -28,20 +28,46 @@ function useInView(threshold = 0.15) {
   return [ref, vis]
 }
 
-const SEEKER_STEPS = [
-  { icon: '✎', title: 'Post a service request',   body: 'Describe what you need, your budget, and how soon. Your post goes live instantly — any skilled student on campus can see it and respond.' },
-  { icon: '◈', title: 'Receive proposals',          body: 'Interested students submit proposals with their approach, timeline, and bid price. You read their profiles, reviews, and past work before deciding.' },
-  { icon: '⊞', title: 'Accept and fund escrow',    body: 'Choose the proposal that fits best. When you accept, your payment is automatically moved to escrow — locked and protected until you approve the final work.' },
-  { icon: '↗', title: 'Track progress',             body: 'Follow the contract through your dashboard. Message your provider anytime. Mark milestones as they are delivered so both sides stay on the same page.' },
-  { icon: '✓', title: 'Approve and release',        body: 'Happy with the result? Release payment with one click and leave a review. Not satisfied? Open a dispute — funds stay locked until it is resolved.' },
+const HIRE_CARDS = [
+  {
+    img: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=600&q=80',
+    title: 'Post a job for free',
+    desc: 'Describe what you need, set your budget, and go live instantly.',
+    detail: 'Your post reaches thousands of vetted students on campus in seconds. No fees, no commitments — just results.',
+  },
+  {
+    img: 'https://images.unsplash.com/photo-1551836022-deb4988cc6c0?w=600&q=80',
+    title: 'Review proposals & hire',
+    desc: 'Browse proposals, check profiles, and pick your perfect match.',
+    detail: 'Compare bids, read cover letters, and view past reviews — everything you need to make a confident decision.',
+  },
+  {
+    img: 'https://images.unsplash.com/photo-1556761175-b413da4baf72?w=600&q=80',
+    title: 'Pay only when done',
+    desc: 'Funds stay in escrow until you approve the completed work.',
+    detail: 'Your payment is locked and protected until you sign off. No risk, no chasing invoices — just safe, simple transactions.',
+  },
 ]
 
-const PROVIDER_STEPS = [
-  { icon: '◈', title: 'Build your profile',         body: 'List your skills, set your rate, and write a short bio. Your profile is your campus portfolio — complete profiles get significantly more views from students who need help.' },
-  { icon: '✎', title: 'Browse open requests',       body: 'See all the service requests posted by students across every category — programming help, design work, essay proofreading, repairs, tutoring, and more.' },
-  { icon: '→', title: 'Submit a proposal',           body: 'Found a request that fits your skills? Write a short cover letter explaining your approach, set your price, and submit. The student reviews all proposals and picks their best match.' },
-  { icon: '⊞', title: 'Deliver your work',          body: 'Once hired, communicate through NEXUS messaging and deliver against the agreed milestones. Your payment is already secured in escrow — you know you will get paid.' },
-  { icon: '✓', title: 'Get paid instantly',          body: 'When the student approves your work, the escrow payment is released to your NEXUS wallet immediately. Withdraw to your bank account anytime.' },
+const WORK_CARDS = [
+  {
+    img: 'https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=600&q=80',
+    title: 'Create your profile',
+    desc: 'List your skills, set your rate, and showcase your work.',
+    detail: 'A complete profile is your campus portfolio. Students searching for your expertise will find you first.',
+  },
+  {
+    img: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=600&q=80',
+    title: 'Browse & apply to jobs',
+    desc: 'Find projects that match your skills and submit proposals.',
+    detail: 'Filter by category, budget, and timeline. Write a short cover letter and name your price — the client picks their favourite.',
+  },
+  {
+    img: 'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=600&q=80',
+    title: 'Get paid securely',
+    desc: 'Payment is guaranteed in escrow before you even start.',
+    detail: 'Once the client approves your work, funds hit your NEXUS wallet instantly. Withdraw to your bank any time.',
+  },
 ]
 
 const TRUST_COLS = [
@@ -50,59 +76,72 @@ const TRUST_COLS = [
   { icon: '◈', title: 'Verified students only',       body: 'Sign-up requires a university email address. Every account is tied to a real campus identity — no anonymous users.' },
 ]
 
+function HowCard({ card, visible, delay }) {
+  const [hovered, setHovered] = useState(false)
+  return (
+    <div
+      className={styles.howCard}
+      style={{
+        opacity: visible ? 1 : 0,
+        transform: visible ? 'translateY(0)' : 'translateY(36px)',
+        transition: `opacity 0.55s ease ${delay}s, transform 0.55s var(--ease-out) ${delay}s`,
+      }}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+    >
+      <div className={styles.howCardImgWrap}>
+        <img
+          src={card.img}
+          alt={card.title}
+          className={styles.howCardImg}
+          loading="lazy"
+        />
+        {/* Hover overlay with detail text */}
+        <div className={`${styles.howCardOverlay} ${hovered ? styles.howCardOverlayVisible : ''}`}>
+          <p className={styles.howCardDetail}>{card.detail}</p>
+        </div>
+      </div>
+      <div className={styles.howCardBody}>
+        <h3 className={styles.howCardTitle}>{card.title}</h3>
+        <p className={styles.howCardDesc}>{card.desc}</p>
+      </div>
+    </div>
+  )
+}
+
 function HowSection({ howRef, howVis }) {
-  const [howTab, setHowTab] = useState('seeker')
-  const steps = howTab === 'seeker' ? SEEKER_STEPS : PROVIDER_STEPS
+  const [howTab, setHowTab] = useState('hire')
+  const cards = howTab === 'hire' ? HIRE_CARDS : WORK_CARDS
 
   return (
     <section className={styles.how} id="how-it-works" ref={howRef}>
       <div className="container">
-
-        {/* Heading */}
-        <div className={styles.sectionHead} style={{ marginBottom: 0 }}>
+        <div className={styles.howHead}>
           <div>
             <p className={styles.eyebrow}>Simple by design</p>
             <h2 className={styles.sectionTitle}>How NEXUS works.</h2>
-            <p className={styles.howSubtext}>
-              Whether you need help or want to offer your skills,<br />
-              NEXUS makes student service exchange simple, safe, and fair.
-            </p>
+          </div>
+          {/* Tab switcher — top right */}
+          <div className={styles.howTabBar}>
+            <button
+              className={`${styles.howTabBtn} ${howTab === 'hire' ? styles.howTabActive : ''}`}
+              onClick={() => setHowTab('hire')}
+            >
+              For hiring
+            </button>
+            <button
+              className={`${styles.howTabBtn} ${howTab === 'work' ? styles.howTabActive : ''}`}
+              onClick={() => setHowTab('work')}
+            >
+              For finding work
+            </button>
           </div>
         </div>
 
-        {/* Tab switcher */}
-        <div className={styles.howTabBar}>
-          <button
-            className={`${styles.howTabBtn} ${howTab === 'seeker' ? styles.howTabActive : ''}`}
-            onClick={() => setHowTab('seeker')}
-          >
-            I need help
-          </button>
-          <button
-            className={`${styles.howTabBtn} ${howTab === 'provider' ? styles.howTabActive : ''}`}
-            onClick={() => setHowTab('provider')}
-          >
-            I have skills
-          </button>
-        </div>
-
-        {/* Steps */}
-        <div className={styles.howSteps} key={howTab}>
-          {steps.map((s, i) => (
-            <div
-              key={s.title}
-              className={styles.howStepNew}
-              style={{
-                opacity: howVis ? 1 : 0,
-                transform: howVis ? 'translateY(0)' : 'translateY(32px)',
-                transition: `opacity 0.5s ease ${i * 0.08}s, transform 0.5s var(--ease-out) ${i * 0.08}s`,
-              }}
-            >
-              <div className={styles.howStepIcon}>{s.icon}</div>
-              <span className={styles.howStepNum}>Step {String(i + 1).padStart(2, '0')}</span>
-              <h3 className={styles.howStepTitle}>{s.title}</h3>
-              <p className={styles.howStepBody}>{s.body}</p>
-            </div>
+        {/* Image cards */}
+        <div className={styles.howCards} key={howTab}>
+          {cards.map((card, i) => (
+            <HowCard key={card.title} card={card} visible={howVis} delay={i * 0.1} />
           ))}
         </div>
 
@@ -118,7 +157,6 @@ function HowSection({ howRef, howVis }) {
             </div>
           ))}
         </div>
-
       </div>
     </section>
   )
@@ -143,16 +181,23 @@ export default function Home() {
   return (
     <div className={styles.page}>
 
-      {/* ── Hero ── */}
+      {/* ── Hero — full-bleed photo ── */}
       <section className={styles.hero}>
-        <div className={styles.gridLines} aria-hidden>
-          {Array.from({length:7}).map((_,i)=><div key={i} className={styles.gridLine}/>)}
-        </div>
+        {/* Background photo */}
+        <img
+          src="https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=1800&q=85"
+          alt="Students collaborating on campus"
+          className={styles.heroBg}
+        />
+        {/* Dark gradient overlay */}
+        <div className={styles.heroOverlay} />
+
         <div className={`container ${styles.heroInner}`}>
-          <div className={`${styles.badge}`}>
+          <div className={styles.heroBadge}>
             <span className={styles.dot}/>
             Trusted by 50,000+ professionals worldwide
           </div>
+
           <h1 className={styles.headline}>
             Where talent meets<br/><em>opportunity.</em>
           </h1>
@@ -161,31 +206,41 @@ export default function Home() {
             without the overhead of traditional hiring.
           </p>
 
+          {/* Frosted-glass pill toggle */}
           <div className={styles.modeToggle}>
-            <button className={`${styles.modeBtn} ${mode==='hire'?styles.modeActive:''}`} onClick={()=>setMode('hire')}>I want to hire</button>
-            <button className={`${styles.modeBtn} ${mode==='work'?styles.modeActive:''}`} onClick={()=>setMode('work')}>I want to work</button>
+            <button
+              className={`${styles.modeBtn} ${mode === 'hire' ? styles.modeActive : ''}`}
+              onClick={() => setMode('hire')}
+            >
+              I want to hire
+            </button>
+            <button
+              className={`${styles.modeBtn} ${mode === 'work' ? styles.modeActive : ''}`}
+              onClick={() => setMode('work')}
+            >
+              I want to work
+            </button>
           </div>
 
+          {/* Search bar */}
           <form className={styles.searchWrap} onSubmit={handleSearch}>
             <div className={styles.searchBox}>
               <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
               <input
                 className={styles.searchInput}
-                placeholder={mode==='hire' ? 'Describe what you need…' : 'Search for opportunities…'}
+                placeholder={mode === 'hire' ? 'Describe what you need…' : 'Search for opportunities…'}
                 value={query}
-                onChange={e=>setQuery(e.target.value)}
+                onChange={e => setQuery(e.target.value)}
               />
-              <button type="submit" className={styles.searchBtn}>Search</button>
+              <button type="submit" className={styles.searchBtn}>Search →</button>
             </div>
             <div className={styles.chips}>
               <span className={styles.chipsLabel}>Popular:</span>
-              {SUGGESTIONS.map(s=>(
-                <button type="button" key={s} className={styles.chip} onClick={()=>setQuery(s)}>{s}</button>
+              {SUGGESTIONS.map(s => (
+                <button type="button" key={s} className={styles.chip} onClick={() => setQuery(s)}>{s}</button>
               ))}
             </div>
           </form>
-
-
         </div>
       </section>
 
@@ -194,7 +249,7 @@ export default function Home() {
         <p className={styles.trustLabel}>Trusted by teams at</p>
         <div className={styles.marqueeWrap}>
           <div className={styles.marqueeTrack}>
-            {[...LOGOS,...LOGOS].map((n,i)=><span key={i} className={styles.marqueeItem}>{n}</span>)}
+            {[...LOGOS,...LOGOS].map((n,i) => <span key={i} className={styles.marqueeItem}>{n}</span>)}
           </div>
         </div>
       </section>
@@ -210,7 +265,7 @@ export default function Home() {
             <Link to="/browse" className={styles.viewAll}>View all categories →</Link>
           </div>
           <div className={styles.catGrid}>
-            {CATEGORIES.map((c,i)=>(
+            {CATEGORIES.map((c,i) => (
               <Link to={`/browse?cat=${encodeURIComponent(c.label)}`} key={c.label} className={styles.catCard}
                 style={{ opacity: catVis?1:0, transform: catVis?'translateY(0)':'translateY(28px)', transition:`opacity 0.5s ease ${i*0.05}s,transform 0.5s var(--ease-out) ${i*0.05}s` }}>
                 <span className={styles.catIcon}>{c.icon}</span>

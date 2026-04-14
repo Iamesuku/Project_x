@@ -1,6 +1,7 @@
 import { useState } from 'react'
-import { useParams, Link, useNavigate } from 'react-router-dom'
+import { useParams, Link } from 'react-router-dom'
 import { useApp } from '../context/AppContext'
+import TrustBadge from '../components/TrustBadge'
 import styles from './FreelancerProfile.module.css'
 
 function ReviewCard({ review, fromName }) {
@@ -70,9 +71,12 @@ export default function FreelancerProfile() {
                     <span className={styles.dividerDot}>·</span>
                     <span className={styles.jobsDone}>{f.completedJobs} jobs</span>
                   </div>
+                  <div className={styles.trustBadgeWrap}>
+                    <TrustBadge user={f} />
+                  </div>
                 </div>
                 <div className={styles.rateBlock}>
-                  <p className={styles.rate}>${f.rate}<span>/hr</span></p>
+                  <p className={styles.rate}>₦{f.rate}<span>/hr</span></p>
                   <p className={styles.rateLabel}>Hourly rate</p>
                 </div>
               </div>
@@ -133,7 +137,7 @@ export default function FreelancerProfile() {
           {/* ── Sidebar ── */}
           <div className={styles.sidebar}>
             <div className={styles.sideCard}>
-              <p className={styles.sideRate}>${f.rate}<span>/hr</span></p>
+              <p className={styles.sideRate}>₦{f.rate}<span>/hr</span></p>
               <div className={styles.sideStats}>
                 {[
                   ['Rating', `${f.rating} ★`],
@@ -166,7 +170,7 @@ export default function FreelancerProfile() {
                     <p className={styles.simName}>{sim.name}</p>
                     <p className={styles.simTitle}>{sim.title}</p>
                   </div>
-                  <span className={styles.simRate}>${sim.rate}/hr</span>
+                  <span className={styles.simRate}>₦{sim.rate}/hr</span>
                 </Link>
               ))}
             </div>

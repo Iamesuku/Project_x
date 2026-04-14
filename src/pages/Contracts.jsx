@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useApp } from '../context/AppContext'
 import styles from './Contracts.module.css'
+import DisputeModal from '../components/DisputeModal'
 
 const STATUS_LABELS = { active: 'Active', completed: 'Completed', disputed: 'Disputed' }
 const STATUS_COLORS = { active: 'green', completed: 'blue', disputed: 'red' }
@@ -14,7 +15,7 @@ function ProgressBar({ value }) {
   )
 }
 
-function ContractCard({ contract, onRelease, onToggleMilestone }) {
+function ContractCard({ contract, onRelease, onToggleMilestone, onDispute }) {
   const [showRelease, setShowRelease] = useState(false)
   const { wallet } = useApp()
 
@@ -76,6 +77,12 @@ function ContractCard({ contract, onRelease, onToggleMilestone }) {
             Message freelancer
           </Link>
           <button
+            className={styles.disputeBtn}
+            onClick={() => onDispute(contract)}
+          >
+            Raise a dispute
+          </button>
+          <button
             className={styles.releaseBtn}
             onClick={() => setShowRelease(v => !v)}
           >
@@ -118,11 +125,13 @@ function ContractCard({ contract, onRelease, onToggleMilestone }) {
 
 export default function Contracts() {
   const { contracts, releaseEscrow, toggleMilestone, wallet } = useApp()
-  const [filter, setFilter] = useState('all')
+  const [filter, setFilter]           = useState('all')
+  const [disputeContract, setDisputeContract] = useState(null)
 
   const filtered = filter === 'all' ? contracts : contracts.filter(c => c.status === filter)
-  const active = contracts.filter(c => c.status === 'active').length
+  const active    = contracts.filter(c => c.status === 'active').length
   const completed = contracts.filter(c => c.status === 'completed').length
+  const disputed  = contracts.filter(c => c.status === 'disputed').length
   const totalValue = contracts.reduce((s, c) => s + c.amount, 0)
 
   return (
@@ -139,12 +148,12 @@ export default function Contracts() {
         {/* Stats */}
         <div className={styles.statsRow}>
           {[
-            { label: 'Active contracts', value: active, accent: active > 0 },
+            { label: 'Active contracts', value: active,    accent: active > 0 },
             { label: 'Completed',        value: completed },
+            { label: 'Disputed',         value: disputed,  danger: disputed > 0 },
             { label: 'In escrow',        value: `$${wallet.escrow.toFixed(2)}` },
-            { label: 'Total value',      value: `$${totalValue.toLocaleString()}` },
           ].map(s => (
-            <div key={s.label} className={`${styles.statCard} ${s.accent ? styles.statAccent : ''}`}>
+            <div key={s.label} className={`${styles.statCard} ${s.accent ? styles.statAccent : ''} ${s.danger ? styles.statDanger : ''}`}>
               <p className={styles.statLabel}>{s.label}</p>
               <p className={styles.statValue}>{s.value}</p>
             </div>
@@ -153,7 +162,7 @@ export default function Contracts() {
 
         {/* Filter */}
         <div className={styles.filterRow}>
-          {[['all','All'],['active','Active'],['completed','Completed']].map(([v,l]) => (
+          {[['all','All'],['active','Active'],['completed','Completed'],['disputed','Disputed']].map(([v,l]) => (
             <button key={v} className={`${styles.filterBtn} ${filter===v?styles.filterActive:''}`} onClick={() => setFilter(v)}>{l}</button>
           ))}
         </div>
@@ -173,11 +182,27 @@ export default function Contracts() {
                 contract={c}
                 onRelease={releaseEscrow}
                 onToggleMilestone={toggleMilestone}
+                onDispute={setDisputeContract}
               />
             ))}
           </div>
         )}
+
+        {/* Support link */}
+        <div className={styles.supportFooter}>
+          <Link to="/support" className={styles.supportLink}>
+            View active dispute tickets →
+          </Link>
+        </div>
       </div>
+
+      {/* Dispute modal */}
+      {disputeContract && (
+        <DisputeModal
+          contract={disputeContract}
+          onClose={() => setDisputeContract(null)}
+        />
+      )}
     </div>
   )
 }

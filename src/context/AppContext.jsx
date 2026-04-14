@@ -17,16 +17,21 @@ const initials = name => name.split(' ').map(w=>w[0]).join('').toUpperCase().sli
 
 // ── Seed data (fallback when Firestore returns 0 results) ─────────────────
 const SEED_FREELANCERS = [
-  { id:'f1', name:'Amara Osei',       avatar:'AO', title:'UI/UX Designer',            rate:45,  rating:4.9, reviews:128, skills:['Figma','Prototyping','User Research','Design Systems'], bio:'Award-winning designer with 6+ years helping startups ship beautiful products. I specialize in end-to-end product design from research to high-fidelity prototypes.', location:'Lagos, NG', completedJobs:84, category:'Design & Creative' },
-  { id:'f2', name:'Javier Ruiz',      avatar:'JR', title:'Full-Stack Developer',       rate:65,  rating:4.8, reviews:213, skills:['React','Node.js','PostgreSQL','TypeScript'], bio:'I build fast, scalable web apps. Obsessed with clean code and great UX. 8+ years across fintech and SaaS.', location:'Madrid, ES', completedJobs:142, category:'Development & IT' },
-  { id:'f3', name:'Priya Nair',       avatar:'PN', title:'Brand Strategist',           rate:55,  rating:5.0, reviews:67,  skills:['Brand Identity','Copywriting','Strategy','Positioning'], bio:'Former FMCG brand manager. Now I help startups find their voice and build brands that last.', location:'Mumbai, IN', completedJobs:53, category:'Sales & Marketing' },
-  { id:'f4', name:'Kwame Asante',     avatar:'KA', title:'Motion Designer',            rate:50,  rating:4.7, reviews:91,  skills:['After Effects','Cinema 4D','Lottie','Premiere Pro'], bio:'I animate ideas into stories. Worked with global ad agencies for 5 years on award-winning campaigns.', location:'Accra, GH', completedJobs:76, category:'Design & Creative' },
-  { id:'f5', name:'Sofia Lindqvist',  avatar:'SL', title:'Data Analyst',               rate:60,  rating:4.9, reviews:55,  skills:['Python','Tableau','SQL','dbt'], bio:'Turning raw data into decisions. Ex-Spotify analytics lead. I help companies instrument, analyze and act.', location:'Stockholm, SE', completedJobs:39, category:'Development & IT' },
-  { id:'f6', name:'Ethan Mwangi',     avatar:'EM', title:'SEO Copywriter',             rate:35,  rating:4.6, reviews:174, skills:['SEO Writing','Email Marketing','Ads Copy','Content Strategy'], bio:'Words that convert. 200+ brands, 3M+ words written. Ranked #1 for over 400 keywords for clients.', location:'Nairobi, KE', completedJobs:161, category:'Writing & Translation' },
-  { id:'f7', name:'Chen Wei',         avatar:'CW', title:'Mobile Developer',           rate:70,  rating:4.8, reviews:88,  skills:['React Native','Flutter','Swift','Kotlin'], bio:'I ship mobile apps that users love. 50+ apps live on both stores, 10M+ combined downloads.', location:'Singapore, SG', completedJobs:67, category:'Development & IT' },
-  { id:'f8', name:'Fatima Al-Hassan', avatar:'FA', title:'Financial Analyst',          rate:75,  rating:5.0, reviews:42,  skills:['Financial Modeling','Excel','FP&A','Valuation'], bio:'CFA-certified analyst. I help businesses understand their numbers and build models that raise capital.', location:'Dubai, AE', completedJobs:31, category:'Finance & Accounting' },
-  { id:'f9', name:'Diego Morales',    avatar:'DM', title:'DevOps Engineer',            rate:80,  rating:4.8, reviews:63,  skills:['AWS','Terraform','Docker','Kubernetes'], bio:'Cloud infrastructure expert. I automate deployments and cut cloud costs. AWS certified architect.', location:'Buenos Aires, AR', completedJobs:48, category:'Development & IT' },
-  { id:'f10',name:'Yuki Tanaka',      avatar:'YT', title:'Legal Consultant',           rate:90,  rating:4.9, reviews:29,  skills:['Contract Law','IP','Compliance','GDPR'], bio:'Tech-focused lawyer with 8 years helping startups with contracts, IP protection, and compliance.', location:'Tokyo, JP', completedJobs:22, category:'Legal' },
+  { id:'f1', name:'Amara Osei',       avatar:'AO', title:'UI/UX Designer',            rate:45,  rating:4.9, reviews:128, skills:['Figma','Prototyping','User Research','Design Systems'], bio:'Award-winning designer with 6+ years helping startups ship beautiful products. I specialize in end-to-end product design from research to high-fidelity prototypes.', location:'Lagos, NG', completedJobs:84, category:'Design & Creative',    emailVerified:true, memberSince:'2025-09-01' },
+  { id:'f2', name:'Javier Ruiz',      avatar:'JR', title:'Full-Stack Developer',       rate:65,  rating:4.8, reviews:213, skills:['React','Node.js','PostgreSQL','TypeScript'], bio:'I build fast, scalable web apps. Obsessed with clean code and great UX. 8+ years across fintech and SaaS.', location:'Lagos, NG', completedJobs:142, category:'Development & IT',  emailVerified:true, memberSince:'2025-09-05' },
+  { id:'f3', name:'Priya Nair',       avatar:'PN', title:'Brand Strategist',           rate:55,  rating:5.0, reviews:67,  skills:['Brand Identity','Copywriting','Strategy','Positioning'], bio:'Former FMCG brand manager. Now I help campus brands find their voice and build identities that last.', location:'Abuja, NG', completedJobs:53, category:'Sales & Marketing', emailVerified:true, memberSince:'2025-09-10' },
+  { id:'f4', name:'Kwame Asante',     avatar:'KA', title:'Motion Designer',            rate:50,  rating:4.7, reviews:91,  skills:['After Effects','Cinema 4D','Lottie','Premiere Pro'], bio:'I animate ideas into stories. Worked with campus media teams and student productions for 3 years.', location:'Lagos, NG', completedJobs:76, category:'Design & Creative',    emailVerified:true, memberSince:'2025-08-20' },
+  { id:'f5', name:'Sofia Lindqvist',  avatar:'SL', title:'Data Analyst',               rate:60,  rating:4.9, reviews:55,  skills:['Python','Tableau','SQL','dbt'], bio:'Turning raw data into decisions. I help student associations and campus projects instrument, analyze and act on their data.', location:'Ibadan, NG', completedJobs:39, category:'Development & IT',  emailVerified:true, memberSince:'2025-09-15' },
+  { id:'f6', name:'Ethan Mwangi',     avatar:'EM', title:'SEO Copywriter',             rate:35,  rating:4.6, reviews:174, skills:['SEO Writing','Email Marketing','Ads Copy','Content Strategy'], bio:'Words that convert. I have helped 50+ campus brands rank online and grow their audience.', location:'Lagos, NG', completedJobs:161, category:'Writing & Translation', emailVerified:true, memberSince:'2025-07-01' },
+  { id:'f7', name:'Chen Wei',         avatar:'CW', title:'Mobile Developer',           rate:70,  rating:4.8, reviews:88,  skills:['React Native','Flutter','Swift','Kotlin'], bio:'I ship mobile apps that students love. 10+ campus apps delivered, from event trackers to study tools.', location:'Lagos, NG', completedJobs:67, category:'Development & IT',  emailVerified:true, memberSince:'2025-09-03' },
+  { id:'f8', name:'Fatima Al-Hassan', avatar:'FA', title:'Financial Analyst',          rate:75,  rating:5.0, reviews:42,  skills:['Financial Modeling','Excel','FP&A','Valuation'], bio:'Finance student with CFA Level I. I build financial models for campus startups and help societies manage their budgets.', location:'Abuja, NG', completedJobs:31, category:'Finance & Accounting', emailVerified:true, memberSince:'2025-10-01' },
+  { id:'f9', name:'Diego Morales',    avatar:'DM', title:'DevOps Engineer',            rate:80,  rating:4.8, reviews:63,  skills:['AWS','Terraform','Docker','Kubernetes'], bio:'Cloud infrastructure expert. I help student teams deploy and scale their projects without complexity.', location:'Lagos, NG', completedJobs:48, category:'Development & IT',  emailVerified:true, memberSince:'2025-08-15' },
+  { id:'f10',name:'Yuki Tanaka',      avatar:'YT', title:'Legal Consultant',           rate:90,  rating:4.9, reviews:29,  skills:['Contract Law','IP','Compliance','GDPR'], bio:'Law student specializing in tech and IP. I help campus startups with contracts, partnerships, and compliance.', location:'Lagos, NG', completedJobs:22, category:'Legal',               emailVerified:true, memberSince:'2025-11-01' },
+  // ── Campus-specific additions ──
+  { id:'f11',name:'Chidi Okonkwo',   avatar:'CO', title:'Academic Tutor',             rate:15,  rating:4.8, reviews:34,  skills:['Mathematics','Calculus','Statistics','Physics'], bio:'300-level Engineering student at UNILAG. I have been tutoring fellow students in STEM subjects for 2 years. Clear explanations and flexible scheduling.', location:'Lagos, NG', completedJobs:28, category:'Academic Support',  emailVerified:true, memberSince:'2025-09-20' },
+  { id:'f12',name:'Adaeze Nwosu',    avatar:'AN', title:'Campus Photographer',        rate:20,  rating:4.9, reviews:19,  skills:['Event Photography','Portrait','Lightroom','Adobe Express'], bio:'Mass Communication student passionate about visual storytelling. I cover departmental events, graduations, socials, and personal portraits on campus.', location:'Lagos, NG', completedJobs:15, category:'Photography',       emailVerified:true, memberSince:'2025-10-05' },
+  { id:'f13',name:'Seun Adeyemi',    avatar:'SA', title:'Social Media Manager',       rate:25,  rating:4.7, reviews:12,  skills:['Instagram','TikTok','Content Calendar','Canva'], bio:'Marketing student with hands-on experience managing social accounts for campus brand pages and student startups. I grow engagement and create content that resonates with university audiences.', location:'Abuja, NG', completedJobs:9,  category:'Sales & Marketing', emailVerified:true, memberSince:'2025-11-10' },
+  { id:'f14',name:'Tolu Fashola',    avatar:'TF', title:'Video Editor',               rate:30,  rating:4.6, reviews:22,  skills:['Premiere Pro','CapCut','DaVinci Resolve','After Effects'], bio:'Computer Science student who edits YouTube vlogs, TikTok content, and departmental recap videos. Fast turnaround, clean transitions, and strong storytelling for campus creators.', location:'Lagos, NG', completedJobs:18, category:'Design & Creative',  emailVerified:true, memberSince:'2025-09-25' },
 ]
 
 const SEED_JOBS = [
@@ -38,6 +43,55 @@ const SEED_JOBS = [
   { id:'j6', title:'Financial model for Series A deck', category:'Finance & Accounting', budget:1500, type:'Fixed', posted:'1 day ago', proposals:4, description:'Build a 5-year financial model with revenue projections, unit economics, and a cap table. Outputs will be used in investor meetings. Must work in Excel and Google Sheets.', skills:['Excel','Financial Modeling','FP&A'], clientId:'demo', status:'open', duration:'1–2 weeks' },
   { id:'j7', title:'Mobile app UI design – iOS & Android', category:'Design & Creative', budget:950, type:'Fixed', posted:'4 hours ago', proposals:7, description:'Design screens for a fitness tracking app: onboarding, home, workout tracking, and profile. Deliverable: Figma file with components and auto-layout.', skills:['Figma','Mobile UI','iOS Design'], clientId:'demo2', status:'open', duration:'2 weeks' },
   { id:'j8', title:'GDPR compliance review & documentation', category:'Legal', budget:1100, type:'Fixed', posted:'3 days ago', proposals:3, description:'Review our current data practices, draft privacy policy, DSAR process and DPA templates. We process EU user data and need to be fully compliant.', skills:['GDPR','Privacy Law','Compliance'], clientId:'demo2', status:'open', duration:'1 week' },
+  // ── Campus-specific jobs ──
+  { id:'j9', title:'Need a tutor for Calculus — 4 sessions', category:'Academic Support', budget:8000, type:'Fixed', posted:'1 day ago', proposals:3, description:'I am a 200-level Engineering student struggling with MTH102 (Integral Calculus). I need 4 one-hour tutoring sessions, preferably over 2 weeks. Flexible timing, can meet in the library or remotely.', skills:['Mathematics','Calculus','Teaching'], clientId:'demo', status:'open', duration:'2 weeks' },
+  { id:'j10',title:'Event photographer for departmental dinner', category:'Photography', budget:15000, type:'Fixed', posted:'12 hours ago', proposals:5, description:'Our department (Computer Science, UNILAG) is hosting its annual dinner and awards night. We need a professional photographer to cover the full event (approx. 3 hours) and deliver edited photos within 48 hours.', skills:['Event Photography','Lightroom','Photo Editing'], clientId:'demo2', status:'open', duration:'1 evening' },
+  { id:'j11',title:'Manage our faculty association Instagram for 1 month', category:'Sales & Marketing', budget:500, type:'Hourly', posted:'2 days ago', proposals:7, description:'The Faculty of Social Sciences Association needs a social media manager to handle our Instagram page for the month of May. Responsibilities: 3 posts per week, story updates, and audience engagement. Content ideas will be provided.', skills:['Instagram','Canva','Content Creation'], clientId:'demo2', status:'open', duration:'1 month' },
+]
+
+const SEED_DISPUTES = [
+  {
+    id: 'NXS-001',
+    contractId: 'c1',
+    jobTitle: 'Build a SaaS dashboard in React',
+    freelancerName: 'Javier Ruiz',
+    amount: 1200,
+    reason: 'Work quality below standard',
+    description: 'The delivered dashboard has multiple broken components and does not match the Figma designs provided. The Charts & Data milestone was marked complete, but the charts are rendering with placeholder data and not connected to the REST API as agreed. I have sent three follow-up messages with no meaningful response over 5 days.',
+    evidenceCount: 3,
+    status: 'under_review',
+    priority: 'high',
+    createdAt: '2026-02-20',
+    resolverNote: 'We have reviewed the submitted evidence and have reached out to the freelancer for their response. A decision will be issued within 24 hours.',
+  },
+  {
+    id: 'NXS-002',
+    contractId: 'c_demo2',
+    jobTitle: 'Brand identity for fintech startup',
+    freelancerName: 'Priya Nair',
+    amount: 800,
+    reason: 'Missed deadlines',
+    description: 'The agreed delivery date was 10 days after kick-off. It has now been 18 days and only a mood board has been delivered. No logo, color palette, or usage guidelines as specified in the contract scope.',
+    evidenceCount: 1,
+    status: 'open',
+    priority: 'medium',
+    createdAt: '2026-03-01',
+    resolverNote: null,
+  },
+  {
+    id: 'NXS-003',
+    contractId: 'c_demo3',
+    jobTitle: 'SEO content writer – 10 articles/month',
+    freelancerName: 'Ethan Mwangi',
+    amount: 400,
+    reason: 'Work not delivered',
+    description: 'Paid for 10 articles. Only 4 were delivered over 3 weeks. Repeated requests for the remaining 6 have been ignored.',
+    evidenceCount: 2,
+    status: 'resolved',
+    priority: 'medium',
+    createdAt: '2026-01-15',
+    resolverNote: 'After reviewing all evidence, NEXUS has determined that a partial refund of $240 will be issued for the 6 undelivered articles. Funds have been released from escrow.',
+  },
 ]
 
 const SEED_TRANSACTIONS = [
@@ -102,6 +156,7 @@ export function AppProvider({ children }) {
   const [reviews,      setReviews]      = useState([{ id:'r1', contractId:'c1', fromId:'demo', toId:'f2', rating:5, comment:'Excellent work, very professional. Delivered ahead of schedule.', date:'2026-02-14' }])
   const [threads,      setThreads]      = useState([]) // RTDB threads for contact list
   const [toasts,       setToasts]       = useState([])
+  const [disputes,     setDisputes]     = useState(SEED_DISPUTES)
 
   // ── Track active real-time unsubs ─────────────────────────────────────
   const unsubThreads = useRef(null)
@@ -127,6 +182,7 @@ export function AppProvider({ children }) {
         setSavedFreelancers([])
         setReviews([])
         setThreads([])
+        setDisputes(SEED_DISPUTES)
         if (unsubThreads.current) { unsubThreads.current(); unsubThreads.current = null }
         if (unsubNotifs.current)  { unsubNotifs.current();  unsubNotifs.current  = null }
         return
@@ -140,7 +196,7 @@ export function AppProvider({ children }) {
           setUserState({
             id:          fbUser.uid,
             name:        d.name        || fbUser.displayName || fbUser.email.split('@')[0],
-            avatar:      d.avatar      || initials(d.name || fbUser.email),
+            avatar:      d.avatar      || initials(d.name || fbUser.displayName || fbUser.email),
             role:        d.role        || 'client',
             email:       fbUser.email,
             memberSince: d.memberSince?.toDate?.()?.toLocaleDateString('en-US', { month:'long', year:'numeric' }) || 'March 2026',
@@ -152,8 +208,43 @@ export function AppProvider({ children }) {
             reviewCount: d.reviewCount || 0,
             completedJobs: d.completedJobs || 0,
           })
+        } else {
+          // No Firestore doc (rules may be locked) — build from Auth data
+          const emailName = fbUser.email?.split('@')[0] || 'User'
+          const displayName = fbUser.displayName || emailName
+          setUserState({
+            id:           fbUser.uid,
+            name:         displayName,
+            avatar:       initials(displayName),
+            role:         'client',
+            email:        fbUser.email,
+            memberSince:  new Date().toLocaleDateString('en-US', { month:'long', year:'numeric' }),
+            bio:          '',
+            location:     '',
+            skills:       [],
+            hourlyRate:   0,
+            rating:       0,
+            reviewCount:  0,
+            completedJobs: 0,
+          })
         }
-      } catch (e) { console.warn('Error loading user profile:', e) }
+      } catch (e) {
+        // Firestore read failed (rules / offline) — use Auth data
+        console.warn('[NEXUS] Could not load user profile from Firestore:', e.message)
+        const emailName = fbUser.email?.split('@')[0] || 'User'
+        const displayName = fbUser.displayName || emailName
+        setUserState({
+          id:          fbUser.uid,
+          name:        displayName,
+          avatar:      initials(displayName),
+          role:        'client',
+          email:       fbUser.email,
+          memberSince: new Date().toLocaleDateString('en-US', { month:'long', year:'numeric' }),
+          bio: '', location: '', skills: [], hourlyRate: 0,
+          rating: 0, reviewCount: 0, completedJobs: 0,
+        })
+      }
+
 
       // ── Load wallet ──
       try {
@@ -452,6 +543,31 @@ export function AppProvider({ children }) {
     toast('Review submitted!')
   }
 
+  // ── Disputes ───────────────────────────────────────────────────────────
+  function submitDispute({ contractId, jobTitle, freelancerName, amount, reason, description, evidenceCount }) {
+    const ticketNum = String(disputes.length + 4).padStart(3, '0')
+    const ticket = {
+      id:             `NXS-${ticketNum}`,
+      contractId,
+      jobTitle,
+      freelancerName,
+      amount,
+      reason,
+      description,
+      evidenceCount,
+      status:         'open',
+      priority:       'high',
+      createdAt:      today(),
+      resolverNote:   null,
+    }
+    setDisputes(p => [ticket, ...p])
+    // Mark contract as disputed
+    setContracts(p => p.map(c => c.id === contractId ? { ...c, status: 'disputed' } : c))
+    addNotif(`Dispute ticket ${ticket.id} filed for "${jobTitle}". Our team will review within 48 hours.`, '/support')
+    toast('Dispute submitted — ticket ID: ' + ticket.id)
+    return ticket
+  }
+
   return (
     <AppContext.Provider value={{
       // loading gate
@@ -476,6 +592,8 @@ export function AppProvider({ children }) {
       savedJobs, savedFreelancers, toggleSaveJob, toggleSaveFreelancer,
       // reviews
       reviews, submitReview,
+      // disputes
+      disputes, submitDispute,
       // freelancers data
       freelancers,
       // toast

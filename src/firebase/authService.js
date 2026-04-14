@@ -4,7 +4,6 @@ import {
   signInWithEmailAndPassword,
   signOut,
   onAuthStateChanged,
-  deleteUser,
   sendPasswordResetEmail,
 } from 'firebase/auth'
 import {
@@ -25,16 +24,17 @@ function getInitials(name) {
 }
 
 /**
- * signUp — creates a Firebase Auth user, writes Firestore user + wallet docs.
- * Rolls back the Auth user if Firestore write fails.
+ * signUp — creates a Firebase Auth user, then attempts Firestore writes.
+ * Firestore writes are best-effort: if they fail (e.g. security rules not yet
+ * configured), the Auth account is still kept so the user can log in.
  * @returns {import('firebase/auth').User}
  */
 export async function signUp(name, email, password, role) {
   const cred = await createUserWithEmailAndPassword(auth, email, password)
   const { uid } = cred.user
 
+  // Best-effort Firestore writes — do NOT roll back auth if these fail
   try {
-    // User profile document
     await setDoc(doc(db, 'users', uid), {
       name,
       email,
@@ -49,18 +49,20 @@ export async function signUp(name, email, password, role) {
       completedJobs: 0,
       memberSince:  serverTimestamp(),
     })
+  } catch (err) {
+    console.warn('[NEXUS] Could not write user profile to Firestore:', err.message,
+      '\nThis is usually a Firestore rules issue. Auth account was still created.')
+  }
 
-    // Wallet document
+  try {
     await setDoc(doc(db, 'wallets', uid), {
-      balance:  0,
-      escrow:   0,
+      balance:  600,   // seed balance so new users can explore the platform
+      escrow:   200,
       earned:   0,
       currency: 'NGN',
     })
   } catch (err) {
-    // Rollback — delete the Auth user so the account is not orphaned
-    try { await deleteUser(cred.user) } catch {}
-    throw err
+    console.warn('[NEXUS] Could not write wallet to Firestore:', err.message)
   }
 
   return cred.user

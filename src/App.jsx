@@ -15,6 +15,8 @@ import FreelancerProfile from './pages/FreelancerProfile'
 import Messages          from './pages/Messages'
 import Contracts         from './pages/Contracts'
 import Profile           from './pages/Profile'
+import AdminDashboard    from './pages/AdminDashboard'
+import Support           from './pages/Support'
 
 // ── Layout wrapper — navbar + footer ─────────────────────────────────────
 const WithLayout = ({ children }) => (
@@ -117,6 +119,12 @@ function AppRoutes() {
         <Route path="/profile" element={
           <PrivateRoute><WithLayout><Profile /></WithLayout></PrivateRoute>
         } />
+        <Route path="/support" element={
+          <PrivateRoute><WithLayout><Support /></WithLayout></PrivateRoute>
+        } />
+
+        {/* Admin */}
+        <Route path="/admin" element={<><Navbar /><AdminDashboard /></>} />
 
         {/* 404 */}
         <Route path="*" element={<WithLayout><NotFound /></WithLayout>} />
