@@ -61,18 +61,18 @@ export default function Dashboard() {
         {activeTab === 'overview' && (
           <div className={styles.tabContent}>
             <div className={styles.kpiRow}>
-              {isClient ? [
-                { label:'Wallet Balance',  value:`$${wallet.balance.toFixed(2)}`, sub:'Available',      link:'/wallet' },
-                { label:'In Escrow',       value:`$${wallet.escrow.toFixed(2)}`,  sub:'Protected',      link:'/wallet', accent: wallet.escrow > 0 },
-                { label:'Active Contracts',value: activeContracts.length,         sub:'In progress',    link:'/contracts' },
-                { label:'Jobs Posted',     value: postedJobs.length,              sub:'All time',       link:null },
-                { label:'Proposals In',    value: totalProposals,                 sub:'Total received', link:null },
+              {(isClient ? [
+                { label:'Wallet Balance',  value:`₦${(wallet.balance||0).toLocaleString()}`, sub:'Available',      link:'/wallet' },
+                { label:'In Escrow',       value:`₦${(wallet.escrow||0).toLocaleString()}`,  sub:'Protected',      link:'/wallet', accent: (wallet.escrow||0) > 0 },
+                { label:'Active Contracts',value: activeContracts.length,                     sub:'In progress',    link:'/contracts' },
+                { label:'Jobs Posted',     value: postedJobs.length,                          sub:'All time',       link:null },
+                { label:'Proposals In',    value: totalProposals,                             sub:'Total received', link:null },
               ] : [
-                { label:'Wallet Balance',  value:`$${wallet.balance.toFixed(2)}`, sub:'Available',   link:'/wallet' },
-                { label:'Total Earned',    value:`$${wallet.earned.toFixed(2)}`,  sub:'Lifetime',    link:'/wallet' },
-                { label:'Active Contracts',value: activeContracts.length,         sub:'In progress', link:'/contracts' },
-                { label:'Jobs Applied',    value: appliedJobs.length,             sub:'All time',    link:null },
-              ].map(k => (
+                { label:'Wallet Balance',  value:`₦${(wallet.balance||0).toLocaleString()}`, sub:'Available',   link:'/wallet' },
+                { label:'Total Earned',    value:`₦${(wallet.earned||0).toLocaleString()}`,  sub:'Lifetime',    link:'/wallet' },
+                { label:'Active Contracts',value: activeContracts.length,                     sub:'In progress', link:'/contracts' },
+                { label:'Jobs Applied',    value: appliedJobs.length,                         sub:'All time',    link:null },
+              ]).map(k => (
                 <div key={k.label} className={`${styles.kpi} ${k.accent ? styles.kpiAccent : ''}`}>
                   <p className={styles.kpiLabel}>{k.label}</p>
                   <p className={styles.kpiValue}>{k.value}</p>
