@@ -138,10 +138,10 @@ export function AppProvider({ children }) {
   // ── Core state ──
   const [isLoggedIn, setIsLoggedIn] = useState(false)
   const [user, setUserState] = useState({
-    id:'demo', name:'Alex Johnson', avatar:'AJ', role:'client',
-    email:'alex@nexus.dev', memberSince:'February 2026',
-    bio:'Building great products with great people.', location:'Lagos, NG',
-    skills:[], hourlyRate:0,
+    id: null, name: '', avatar: '', role: 'client',
+    email: '', memberSince: '',
+    bio: '', location: '',
+    skills: [], hourlyRate: 0,
   })
 
   const [wallet,       setWallet]       = useState({ balance:600, escrow:200, earned:120, currency:'NGN' })
@@ -168,21 +168,21 @@ export function AppProvider({ children }) {
       setFirebaseUser(fbUser ?? null)
 
       if (!fbUser) {
-        // Logged out — reset to demo defaults
+        // Logged out — clear all real user data
         setIsLoggedIn(false)
-        setUserState({ id:'demo', name:'Alex Johnson', avatar:'AJ', role:'client', email:'alex@nexus.dev', memberSince:'February 2026', bio:'', location:'Lagos, NG', skills:[], hourlyRate:0 })
-        setWallet({ balance:600, escrow:200, earned:120, currency:'NGN' })
-        setTransactions(SEED_TRANSACTIONS)
-        setJobs(SEED_JOBS)
-        setContracts(SEED_CONTRACTS)
+        setUserState({ id: null, name: '', avatar: '', role: 'client', email: '', memberSince: '', bio: '', location: '', skills: [], hourlyRate: 0 })
+        setWallet({ balance: 0, escrow: 0, earned: 0, currency: 'NGN' })
+        setTransactions([])
+        setJobs(SEED_JOBS)          // keep seed jobs so Browse page has content
+        setContracts([])
         setProposals({})
-        setNotifications(SEED_NOTIFICATIONS)
+        setNotifications([])
         setFreelancers(SEED_FREELANCERS)
         setSavedJobs([])
         setSavedFreelancers([])
         setReviews([])
         setThreads([])
-        setDisputes(SEED_DISPUTES)
+        setDisputes([])
         if (unsubThreads.current) { unsubThreads.current(); unsubThreads.current = null }
         if (unsubNotifs.current)  { unsubNotifs.current();  unsubNotifs.current  = null }
         return

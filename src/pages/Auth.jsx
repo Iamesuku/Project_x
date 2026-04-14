@@ -1,50 +1,34 @@
 import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { useApp } from '../context/AppContext'
-import { signUp, logIn, resetPassword } from '../firebase/authService'
+import { signUp, logIn, resetPassword, signInWithGoogle } from '../firebase/authService'
 import styles from './Auth.module.css'
-
-// ── University email domains accepted by NEXUS ────────────────────────────
-// Add your institution's domain here. The check is suffix-based.
-const UNI_DOMAINS = [
-  '.ac.uk',
-  '.edu',
-  '.edu.ng',
-  '.ac.ng',
-  '.edu.gh',
-  '.ac.za',
-  '.edu.au',
-  '.ac.nz',
-  // common student portal variants
-  'students.',
-  'student.',
-  'stu.',
-]
-
-function isUniEmail(email) {
-  const lower = email.toLowerCase()
-  return UNI_DOMAINS.some(d => lower.includes(d))
-}
 
 // ── Map Firebase / network error codes → friendly messages ────────────────
 const AUTH_ERRORS = {
-  // Standard codes
-  'auth/email-already-in-use':        'An account with this email already exists. Try logging in instead.',
-  'auth/user-not-found':              'No account found with this email address.',
-  'auth/wrong-password':              'Incorrect password. Please try again.',
-  'auth/invalid-credential':          'Incorrect email or password. Please check and try again.',
-  'auth/invalid-email':               'Please enter a valid email address.',
-  'auth/weak-password':               'Password must be at least 6 characters.',
-  'auth/too-many-requests':           'Too many failed attempts. Please wait a few minutes then try again.',
-  'auth/network-request-failed':      'Network error — check your internet connection and try again.',
-  'auth/user-disabled':               'This account has been disabled. Contact support.',
-  'auth/operation-not-allowed':       'Email/password sign-in is not enabled. Please contact the admin.',
-  'auth/popup-closed-by-user':        'Sign-in was cancelled.',
-  'auth/requires-recent-login':       'Please log in again to continue.',
-  // Email Enumeration Protection unified code (Firebase SDK v10+)
-  'auth/invalid-login-credentials':   'Incorrect email or password. Please check and try again.',
-  'auth/missing-password':            'Please enter your password.',
-  'auth/missing-email':               'Please enter your email address.',
+  'auth/email-already-in-use':      'An account with this email already exists. Try logging in instead.',
+  'auth/user-not-found':            'No account found with this email address.',
+  'auth/wrong-password':            'Incorrect password. Please try again.',
+  'auth/invalid-credential':        'Incorrect email or password. Please check and try again.',
+  'auth/invalid-email':             'Please enter a valid email address.',
+  'auth/weak-password':             'Password must be at least 6 characters.',
+  'auth/too-many-requests':         'Too many failed attempts. Please wait a few minutes then try again.',
+  'auth/network-request-failed':    'Network error — check your internet connection and try again.',
+  'auth/user-disabled':             'This account has been disabled. Contact support.',
+  'auth/operation-not-allowed':     'This sign-in method is not enabled. Please contact the admin.',
+  'auth/popup-closed-by-user':      'Sign-in popup was closed. Please try again.',
+  'auth/popup-blocked':             'Popup was blocked by your browser. Please allow popups for this site.',
+  'auth/cancelled-popup-request':   'Another sign-in is in progress.',
+  'auth/requires-recent-login':     'Please log in again to continue.',
+  'auth/invalid-login-credentials': 'Incorrect email or password. Please check and try again.',
+  'auth/missing-password':          'Please enter your password.',
+  'auth/missing-email':             'Please enter your email address.',
+}
+
+function friendlyError(err) {
+  return AUTH_ERRORS[err.code]
+    || (err.message?.includes('network') ? AUTH_ERRORS['auth/network-request-failed'] : null)
+    || 'Something went wrong. Please check your details and try again.'
 }
 
 export default function Auth() {
@@ -56,6 +40,7 @@ export default function Auth() {
   const [form,       setForm]       = useState({ name: '', email: '', password: '' })
   const [errors,     setErrors]     = useState({})
   const [loading,    setLoading]    = useState(false)
+  const [googleLoad, setGoogleLoad] = useState(false)
   const [forgotPw,   setForgotPw]   = useState(false)
   const [resetSent,  setResetSent]  = useState(false)
   const [resetEmail, setResetEmail] = useState('')
@@ -69,24 +54,19 @@ export default function Auth() {
   // ── Validation ───────────────────────────────────────────────────────────
   function validate() {
     const e = {}
-    if (mode === 'signup') {
-      if (!form.name.trim()) {
-        e.name = 'Full name is required'
-      }
-      // University email check on signup only
-      if (!form.email.includes('@')) {
-        e.email = 'Enter a valid email address'
-      } else if (!isUniEmail(form.email)) {
-        e.email = 'Please use your university email address (e.g. you@university.ac.uk)'
-      }
-    } else {
-      if (!form.email.includes('@')) e.email = 'Enter a valid email address'
+    if (mode === 'signup' && !form.name.trim()) {
+      e.name = 'Full name is required'
     }
-    if (form.password.length < 6) e.password = 'Password must be at least 6 characters'
+    if (!form.email.includes('@')) {
+      e.email = 'Enter a valid email address'
+    }
+    if (form.password.length < 6) {
+      e.password = 'Password must be at least 6 characters'
+    }
     return e
   }
 
-  // ── Submit ───────────────────────────────────────────────────────────────
+  // ── Email/Password Submit ─────────────────────────────────────────────────
   async function handleSubmit(ev) {
     ev.preventDefault()
     const e = validate()
@@ -103,34 +83,27 @@ export default function Auth() {
       navigate(role === 'freelancer' ? '/jobs' : '/dashboard')
     } catch (err) {
       console.error('[NEXUS Auth]', err.code, err.message)
-      const friendly = AUTH_ERRORS[err.code]
-        || (err.message?.includes('network') ? AUTH_ERRORS['auth/network-request-failed'] : null)
-        || 'Something went wrong. Please check your details and try again.'
-      setErrors({ general: friendly })
+      setErrors({ general: friendlyError(err) })
     } finally {
       setLoading(false)
     }
   }
 
-  // ── Demo login (for graders / local dev) ─────────────────────────────────
-  async function handleDemoLogin() {
-    setLoading(true)
+  // ── Google Sign-In ────────────────────────────────────────────────────────
+  async function handleGoogle() {
+    setGoogleLoad(true)
+    setErrors({})
     try {
-      await logIn('demo@nexus.ac.uk', 'demo123456')
-      toast('Welcome back, Alex!')
+      await signInWithGoogle()
+      toast('Signed in with Google!')
       navigate('/dashboard')
     } catch (err) {
-      // Demo account doesn't exist yet — create it
-      try {
-        await signUp('Alex Johnson', 'demo@nexus.ac.uk', 'demo123456', 'client')
-        toast('Demo account created — welcome to NEXUS!')
-        navigate('/dashboard')
-      } catch (signupErr) {
-        console.error('[Demo login]', signupErr)
-        setErrors({ general: 'Demo login failed. The Firebase project may be paused or Email/Password auth not enabled.' })
+      console.error('[NEXUS Google]', err.code, err.message)
+      if (err.code !== 'auth/popup-closed-by-user' && err.code !== 'auth/cancelled-popup-request') {
+        setErrors({ general: friendlyError(err) })
       }
     } finally {
-      setLoading(false)
+      setGoogleLoad(false)
     }
   }
 
@@ -153,12 +126,13 @@ export default function Auth() {
       await resetPassword(resetEmail)
       setResetSent(true)
     } catch (err) {
-      const friendly = AUTH_ERRORS[err.code] || 'Could not send reset email. Please try again.'
-      setErrors({ general: friendly })
+      setErrors({ general: AUTH_ERRORS[err.code] || 'Could not send reset email. Please try again.' })
     } finally {
       setLoading(false)
     }
   }
+
+  const anyLoading = loading || googleLoad
 
   // ── Render ────────────────────────────────────────────────────────────────
   return (
@@ -177,14 +151,6 @@ export default function Auth() {
                 ? 'Log back in and pick up where you left off.'
                 : 'Join students sharing skills and getting things done on campus.'}
             </p>
-            {mode === 'signup' && (
-              <div className={styles.uniNotice}>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round"/>
-                </svg>
-                <p>NEXUS is for university students only. A verified campus email is required to sign up.</p>
-              </div>
-            )}
           </div>
         </div>
 
@@ -197,24 +163,62 @@ export default function Auth() {
               <button className={`${styles.modeTab} ${mode==='signup' ? styles.modeActive : ''}`} onClick={() => switchMode('signup')}>Sign up</button>
             </div>
 
-            <div className={styles.roleSelect}>
-              <p className={styles.roleLabel}>I am a…</p>
-              <div className={styles.roleCards}>
-                {[
-                  { value:'client',     icon:'⊞', title:'Service Seeker',   sub:'I need help with something' },
-                  { value:'freelancer', icon:'◈', title:'Service Provider', sub:'I want to offer my skills'  },
-                ].map(r => (
-                  <button key={r.value} type="button"
-                    className={`${styles.roleCard} ${role===r.value ? styles.roleCardActive : ''}`}
-                    onClick={() => setRole(r.value)}>
-                    <span className={styles.roleIcon}>{r.icon}</span>
-                    <span className={styles.roleTitle}>{r.title}</span>
-                    <span className={styles.roleSub}>{r.sub}</span>
-                  </button>
-                ))}
+            {/* ── Google Sign-In (primary CTA) ── */}
+            {!forgotPw && (
+              <div className={styles.googleSection}>
+                <button
+                  id="google-signin-btn"
+                  className={styles.googleBtn}
+                  onClick={handleGoogle}
+                  disabled={anyLoading}
+                >
+                  {googleLoad ? (
+                    <><span className={styles.spinnerDark}/> Signing in…</>
+                  ) : (
+                    <>
+                      {/* Official Google "G" logo */}
+                      <svg width="18" height="18" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+                        <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
+                        <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
+                        <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
+                        <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.35-8.16 2.35-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
+                        <path fill="none" d="M0 0h48v48H0z"/>
+                      </svg>
+                      {mode === 'login' ? 'Continue with Google' : 'Sign up with Google'}
+                    </>
+                  )}
+                </button>
+                <p className={styles.googleNote}>Use your Gmail account — quickest way to get started</p>
               </div>
-            </div>
+            )}
 
+            {/* ── Divider ── */}
+            {!forgotPw && (
+              <div className={styles.divider}><span>or continue with email</span></div>
+            )}
+
+            {/* ── Role selector (signup only) ── */}
+            {mode === 'signup' && !forgotPw && (
+              <div className={styles.roleSelect}>
+                <p className={styles.roleLabel}>I am a…</p>
+                <div className={styles.roleCards}>
+                  {[
+                    { value:'client',     icon:'⊞', title:'Service Seeker',   sub:'I need help with something' },
+                    { value:'freelancer', icon:'◈', title:'Service Provider', sub:'I want to offer my skills'  },
+                  ].map(r => (
+                    <button key={r.value} type="button"
+                      className={`${styles.roleCard} ${role===r.value ? styles.roleCardActive : ''}`}
+                      onClick={() => setRole(r.value)}>
+                      <span className={styles.roleIcon}>{r.icon}</span>
+                      <span className={styles.roleTitle}>{r.title}</span>
+                      <span className={styles.roleSub}>{r.sub}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* ── Email / Password form ── */}
             <form className={styles.form} onSubmit={handleSubmit} noValidate>
               {mode === 'signup' && (
                 <div className={styles.field}>
@@ -227,19 +231,13 @@ export default function Auth() {
               )}
 
               <div className={styles.field}>
-                <label className={styles.label}>
-                  {mode === 'signup' ? 'University email' : 'Email address'}
-                </label>
+                <label className={styles.label}>Email address</label>
                 <input className={`${styles.input} ${errors.email ? styles.inputErr : ''}`}
                   type="email"
-                  placeholder={mode === 'signup' ? 'you@university.ac.uk' : 'you@example.com'}
+                  placeholder="you@example.com"
                   value={form.email}
                   onChange={e => set('email', e.target.value)} autoComplete="email" />
-                {errors.email ? (
-                  <p className={styles.errMsg}>{errors.email}</p>
-                ) : mode === 'signup' ? (
-                  <p className={styles.fieldHint}>Must end in a recognised university domain (e.g. .ac.uk, .edu)</p>
-                ) : null}
+                {errors.email && <p className={styles.errMsg}>{errors.email}</p>}
               </div>
 
               <div className={styles.field}>
@@ -297,7 +295,7 @@ export default function Auth() {
                       <p className={styles.resetLabel}>Enter your account email and we'll send a reset link.</p>
                       <input
                         className={`${styles.input} ${errors.resetEmail ? styles.inputErr : ''}`}
-                        type="email" placeholder="you@university.ac.uk"
+                        type="email" placeholder="you@example.com"
                         value={resetEmail}
                         onChange={e => { setResetEmail(e.target.value); setErrors(ev => ({ ...ev, resetEmail: '' })) }}
                         autoComplete="email"
@@ -305,7 +303,7 @@ export default function Auth() {
                       {errors.resetEmail && <p className={styles.errMsg}>{errors.resetEmail}</p>}
                       {errors.general    && <p className={styles.errMsg}>{errors.general}</p>}
                       <div className={styles.resetActions}>
-                        <button type="submit" className={styles.submitBtn} disabled={loading}>
+                        <button type="submit" className={styles.submitBtn} disabled={anyLoading}>
                           {loading ? <><span className={styles.spinner}/> Sending…</> : 'Send reset link →'}
                         </button>
                         <button type="button" className={styles.switchLink} onClick={() => { setForgotPw(false); setErrors({}) }}>Back to sign in</button>
@@ -314,36 +312,13 @@ export default function Auth() {
                   )}
                 </div>
               ) : (
-                <button type="submit" className={styles.submitBtn} disabled={loading}>
+                <button type="submit" className={styles.submitBtn} disabled={anyLoading}>
                   {loading
                     ? <><span className={styles.spinner}/> {mode==='login' ? 'Signing in…' : 'Creating account…'}</>
-                    : mode==='login' ? 'Sign in →' : 'Create account →'}
+                    : mode==='login' ? 'Sign in with email →' : 'Create account →'}
                 </button>
               )}
             </form>
-
-            {/* Demo login — for graders and presentations */}
-            {!forgotPw && (
-              <div className={styles.demoSection}>
-                <div className={styles.demoDivider}><span>or</span></div>
-                <button
-                  className={styles.demoBtn}
-                  onClick={handleDemoLogin}
-                  disabled={loading}
-                  id="demo-login-btn"
-                >
-                  {loading ? <><span className={styles.spinnerDark}/> Loading demo…</> : (
-                    <>
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-                        <path d="M15 3h4a2 2 0 012 2v14a2 2 0 01-2 2h-4M10 17l5-5-5-5M15 12H3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                      </svg>
-                      Continue as demo user
-                    </>
-                  )}
-                </button>
-                <p className={styles.demoNote}>Instant access · No sign-up required · Demo credentials pre-filled</p>
-              </div>
-            )}
 
             <p className={styles.switchText}>
               {mode==='login'
