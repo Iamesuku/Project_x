@@ -24,6 +24,9 @@ function NotifPanel({ onClose }) {
           </Link>
         ))
       }
+      <Link to="/notifications" className={styles.notifSeeAll} onClick={onClose}>
+        View all notifications →
+      </Link>
     </div>
   )
 }

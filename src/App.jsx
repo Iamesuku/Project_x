@@ -17,6 +17,7 @@ import Contracts         from './pages/Contracts'
 import Profile           from './pages/Profile'
 import AdminDashboard    from './pages/AdminDashboard'
 import Support           from './pages/Support'
+import Notifications    from './pages/Notifications'
 
 // ── Layout wrapper — navbar + footer ─────────────────────────────────────
 const WithLayout = ({ children }) => (
@@ -121,6 +122,9 @@ function AppRoutes() {
         } />
         <Route path="/support" element={
           <PrivateRoute><WithLayout><Support /></WithLayout></PrivateRoute>
+        } />
+        <Route path="/notifications" element={
+          <PrivateRoute><WithLayout><Notifications /></WithLayout></PrivateRoute>
         } />
 
         {/* Admin */}
