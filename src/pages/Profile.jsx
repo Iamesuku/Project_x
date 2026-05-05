@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useApp } from '../context/AppContext'
+import { formatCurrency } from '../utils/format'
+import ConfirmModal from '../components/ConfirmModal'
 import styles from './Profile.module.css'
 
 const SKILLS_OPTS = ['React','Node.js','Python','Figma','UI/UX Design','Branding','SEO','Copywriting',
@@ -12,14 +14,16 @@ export default function Profile() {
   const navigate = useNavigate()
   const [form, setForm] = useState({
     name:       user.name,
-    email:      user.email,
     bio:        user.bio || '',
     location:   user.location || '',
     hourlyRate: user.hourlyRate || '',
     skills:     user.skills || [],
   })
   const [activeTab, setActiveTab] = useState('profile')
-  const [saved, setSaved] = useState(false)
+  const [saved,      setSaved]     = useState(false)
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false)
+  const [showResetConfirm,  setShowResetConfirm]  = useState(false)
+  const currency = wallet?.currency || 'NGN'
 
   function set(k, v) { setForm(f => ({ ...f, [k]: v })); setSaved(false) }
 
@@ -33,8 +37,11 @@ export default function Profile() {
 
   function handleSave(e) {
     e.preventDefault()
-    updateUser(form)
+    // Never send email through updateUser — email changes need Firebase Auth
+    const { ...rest } = form
+    updateUser(rest)
     setSaved(true)
+    setTimeout(() => setSaved(false), 3000)
   }
 
   return (
@@ -57,7 +64,7 @@ export default function Profile() {
               <p className={styles.profileSince}>Member since {user.memberSince}</p>
               <div className={styles.walletMini}>
                 <span className={styles.walletMiniLabel}>Wallet balance</span>
-                <span className={styles.walletMiniVal}>${wallet.balance.toFixed(2)}</span>
+                <span className={styles.walletMiniVal}>{formatCurrency(wallet.balance, currency)}</span>
               </div>
             </div>
 
@@ -92,28 +99,64 @@ export default function Profile() {
 
                 <div className={styles.fieldGrid}>
                   <div className={styles.field}>
-                    <label className={styles.label}>Full name</label>
-                    <input className={styles.input} value={form.name} onChange={e => set('name', e.target.value)} />
+                    <label className={styles.label} htmlFor="profile-name">Full name</label>
+                    <input
+                      id="profile-name"
+                      className={styles.input}
+                      value={form.name}
+                      onChange={e => set('name', e.target.value)}
+                      autoComplete="name"
+                    />
                   </div>
                   <div className={styles.field}>
-                    <label className={styles.label}>Email address</label>
-                    <input className={styles.input} type="email" value={form.email} onChange={e => set('email', e.target.value)} />
+                    <label className={styles.label} htmlFor="profile-email">
+                      Email address
+                      <span className={styles.readonlyBadge}>read-only</span>
+                    </label>
+                    <input
+                      id="profile-email"
+                      className={`${styles.input} ${styles.inputReadonly}`}
+                      type="email"
+                      value={user.email}
+                      readOnly
+                      aria-readonly="true"
+                    />
+                    <p className={styles.readonlyHint}>Email is managed by your sign-in provider and cannot be changed here.</p>
                   </div>
                   <div className={styles.field}>
-                    <label className={styles.label}>Location</label>
-                    <input className={styles.input} placeholder="e.g. Lagos, Nigeria" value={form.location} onChange={e => set('location', e.target.value)} />
+                    <label className={styles.label} htmlFor="profile-location">Location</label>
+                    <input
+                      id="profile-location"
+                      className={styles.input}
+                      placeholder="e.g. Lagos, Nigeria"
+                      value={form.location}
+                      onChange={e => set('location', e.target.value)}
+                      autoComplete="address-level2"
+                    />
                   </div>
                 </div>
 
                 <div className={styles.field}>
-                  <label className={styles.label}>Bio <span className={styles.optional}>(visible on your profile)</span></label>
-                  <textarea className={styles.textarea} rows={4} placeholder="Tell clients and freelancers about yourself…" value={form.bio} onChange={e => set('bio', e.target.value)} />
-                  <p className={styles.hint}>{form.bio.length}/300</p>
+                  <label className={styles.label} htmlFor="profile-bio">
+                    Bio <span className={styles.optional}>(visible on your profile)</span>
+                  </label>
+                  <textarea
+                    id="profile-bio"
+                    className={styles.textarea}
+                    rows={4}
+                    maxLength={300}
+                    placeholder="Tell clients and freelancers about yourself…"
+                    value={form.bio}
+                    onChange={e => set('bio', e.target.value)}
+                  />
+                  <p className={`${styles.hint} ${form.bio.length >= 280 ? styles.hintWarn : ''}`}>
+                    {form.bio.length}/300{form.bio.length >= 300 ? ' — limit reached' : ''}
+                  </p>
                 </div>
 
                 <div className={styles.formActions}>
-                  <button type="submit" className={styles.saveBtn}>
-                    {saved ? '✓ Saved' : 'Save changes'}
+                  <button type="submit" className={`${styles.saveBtn} ${saved ? styles.saveBtnSaved : ''}`}>
+                    {saved ? '✓ Saved!' : 'Save changes'}
                   </button>
                 </div>
               </form>
@@ -156,7 +199,9 @@ export default function Profile() {
                 </div>
 
                 <div className={styles.formActions}>
-                  <button type="submit" className={styles.saveBtn}>{saved ? '✓ Saved' : 'Save changes'}</button>
+                  <button type="submit" className={`${styles.saveBtn} ${saved ? styles.saveBtnSaved : ''}`}>
+                    {saved ? '✓ Saved!' : 'Save changes'}
+                  </button>
                 </div>
               </form>
             )}
@@ -200,16 +245,24 @@ export default function Profile() {
                   <div className={styles.dangerRow}>
                     <div>
                       <p className={styles.dangerLabel}>Log out</p>
-                      <p className={styles.dangerSub}>End your current session.</p>
+                      <p className={styles.dangerSub}>End your current session on this device.</p>
                     </div>
-                    <button className={styles.logoutBtn} onClick={() => { logout(); navigate('/auth') }}>Log out</button>
+                    <button
+                      className={styles.logoutBtn}
+                      onClick={() => setShowLogoutConfirm(true)}
+                    >
+                      Log out
+                    </button>
                   </div>
                   <div className={styles.dangerRow}>
                     <div>
                       <p className={styles.dangerLabel}>Reset demo data</p>
-                      <p className={styles.dangerSub}>Clear all stored data and reload with defaults. Cannot be undone.</p>
+                      <p className={styles.dangerSub}>Clear all stored data and reload with defaults. This cannot be undone.</p>
                     </div>
-                    <button className={styles.resetBtn} onClick={() => { localStorage.clear(); window.location.reload() }}>
+                    <button
+                      className={styles.resetBtn}
+                      onClick={() => setShowResetConfirm(true)}
+                    >
                       Reset data
                     </button>
                   </div>
@@ -219,6 +272,28 @@ export default function Profile() {
           </div>
         </div>
       </div>
+
+      {/* Confirm modals for destructive actions */}
+      {showLogoutConfirm && (
+        <ConfirmModal
+          title="Log out?"
+          message="You will be returned to the sign-in page."
+          confirmLabel="Log out"
+          variant="default"
+          onConfirm={async () => { setShowLogoutConfirm(false); await logout(); navigate('/auth') }}
+          onClose={() => setShowLogoutConfirm(false)}
+        />
+      )}
+      {showResetConfirm && (
+        <ConfirmModal
+          title="Reset all data?"
+          message="This will clear your local data and reload the app. This action cannot be undone."
+          confirmLabel="Reset data"
+          variant="danger"
+          onConfirm={() => { localStorage.clear(); window.location.reload() }}
+          onClose={() => setShowResetConfirm(false)}
+        />
+      )}
     </div>
   )
 }

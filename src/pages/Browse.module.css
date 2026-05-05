@@ -56,3 +56,11 @@
 }
 .saveBtn:hover    { color: var(--black); transform: scale(1.2); }
 .saveBtnActive    { color: var(--black); }
+
+/* New enhanced Browse classes */
+.resultsMeta { display: flex; align-items: center; justify-content: space-between; margin-bottom: 28px; gap: 12px; flex-wrap: wrap; }
+.clearFiltersBtn { font-size: 12.5px; font-weight: 500; color: var(--mid); background: var(--off-white); border: 1px solid var(--border); padding: 6px 14px; border-radius: var(--radius-xl); transition: all 0.2s; cursor: pointer; }
+.clearFiltersBtn:hover { border-color: var(--black); color: var(--black); }
+.searchClear { background: none; border: none; cursor: pointer; color: rgba(255,255,255,0.4); font-size: 13px; padding: 2px 4px; border-radius: 4px; transition: color 0.2s; flex-shrink: 0; }
+.searchClear:hover { color: rgba(255,255,255,0.9); }
+.emptyIcon { font-size: 40px; margin-bottom: 12px; }

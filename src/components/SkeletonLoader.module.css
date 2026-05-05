@@ -1,0 +1,91 @@
+/* ── Skeleton shimmer animation ────────────────────────────────────────── */
+@keyframes shimmer {
+  0%   { background-position: -400px 0; }
+  100% { background-position:  400px 0; }
+}
+
+.bone {
+  background: linear-gradient(
+    90deg,
+    #f0f0f0 25%,
+    #e0e0e0 50%,
+    #f0f0f0 75%
+  );
+  background-size: 800px 100%;
+  animation: shimmer 1.4s ease-in-out infinite;
+  flex-shrink: 0;
+}
+
+/* ── Job card skeleton ─────────────────────────────────────────────────── */
+.jobCard {
+  background: var(--white, #fff);
+  border: 1px solid var(--border, #e2e2e2);
+  border-radius: 12px;
+  padding: 22px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.jobCardHead {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.skillRow {
+  display: flex;
+  gap: 8px;
+  margin-top: 16px;
+  flex-wrap: wrap;
+}
+
+/* ── Freelancer card skeleton ──────────────────────────────────────────── */
+.freelancerCard {
+  background: var(--white, #fff);
+  border: 1px solid var(--border, #e2e2e2);
+  border-radius: 12px;
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+}
+
+.freelancerCardTop {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 4px;
+}
+
+/* ── KPI skeleton ──────────────────────────────────────────────────────── */
+.kpi {
+  background: var(--white, #fff);
+  border: 1px solid var(--border, #e2e2e2);
+  border-radius: 12px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── Notification row skeleton ─────────────────────────────────────────── */
+.notifRow {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--border, #e2e2e2);
+}
+
+/* ── Layout helpers ────────────────────────────────────────────────────── */
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
+}

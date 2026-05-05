@@ -50,3 +50,12 @@
 }
 .saveBtn:hover       { color: var(--black); transform: scale(1.15); }
 .saveBtnActive       { color: var(--black); }
+
+/* Enhanced Jobs classes */
+.resultsMeta      { display: flex; align-items: center; justify-content: space-between; margin-bottom: 28px; gap: 12px; flex-wrap: wrap; }
+.clearFiltersBtn  { font-size: 12.5px; font-weight: 500; color: var(--mid); background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); padding: 6px 14px; border-radius: var(--radius-xl); transition: all 0.2s; cursor: pointer; color: rgba(255,255,255,0.7); }
+.clearFiltersBtn:hover { border-color: rgba(255,255,255,0.6); color: var(--white); }
+.searchClear { background: none; border: none; cursor: pointer; color: rgba(255,255,255,0.4); font-size: 13px; padding: 2px 4px; border-radius: 4px; transition: color 0.2s; flex-shrink: 0; }
+.searchClear:hover { color: rgba(255,255,255,0.9); }
+.emptyIcon   { font-size: 40px; margin-bottom: 12px; }
+.emptyBody   { font-size: 14px; color: var(--muted); margin-bottom: 24px; }

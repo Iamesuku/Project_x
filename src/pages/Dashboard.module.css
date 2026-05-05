@@ -141,3 +141,72 @@
 .miniProgressFill { height: 100%; background: var(--black); border-radius: 3px; transition: width 0.5s; }
 .insufficientBadge { display: block; font-size: 12px; font-weight: 500; color: var(--muted); border: 1px solid var(--border); border-radius: var(--radius-xl); padding: 5px 12px; margin-top: 6px; text-align: center; transition: border-color 0.2s; }
 .insufficientBadge:hover { border-color: var(--black); color: var(--black); }
+
+/* ── Analytics Tab ──────────────────────────────────────────────────────── */
+.analyticsHeader { display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 28px; flex-wrap: wrap; gap: 12px; }
+.analyticsEyebrow { font-size: 11px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; }
+.analyticsTitle { font-family: var(--font-display); font-size: 32px; font-weight: 300; color: var(--black); }
+.analyticsPeriodBadge { font-size: 12.5px; font-weight: 500; color: var(--mid); background: var(--white); border: 1px solid var(--border); border-radius: var(--radius-xl); padding: 6px 16px; }
+
+.analyticsGrid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.analyticsCard { background: var(--white); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 28px; display: flex; flex-direction: column; gap: 20px; }
+.analyticsCardFull { grid-column: 1 / -1; }
+.analyticsCardHead { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.analyticsCardTitle { font-size: 15px; font-weight: 600; color: var(--black); }
+.analyticsBadge { font-size: 11.5px; font-weight: 500; color: var(--mid); background: var(--off-white); border: 1px solid var(--border); border-radius: var(--radius-xl); padding: 4px 12px; white-space: nowrap; }
+.analyticsHint { font-size: 12.5px; color: var(--muted); line-height: 1.5; }
+
+/* Earnings comparison */
+.earningsRow { display: flex; align-items: center; gap: 24px; }
+.earningsBlock { display: flex; flex-direction: column; gap: 6px; flex: 1; }
+.earningsBlockMuted { opacity: 0.7; }
+.earningsDivider { width: 1px; height: 60px; background: var(--border); flex-shrink: 0; }
+.earningsLabel { font-size: 11.5px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.07em; color: var(--muted); }
+.earningsValue { font-family: var(--font-display); font-size: 38px; font-weight: 700; color: var(--black); line-height: 1; }
+.earningsValueSm { font-family: var(--font-display); font-size: 26px; font-weight: 600; color: var(--mid); line-height: 1; }
+.earningsDelta { display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; }
+.earningsDelta span { font-weight: 400; color: var(--muted); }
+.deltaUp { color: var(--success); }
+.deltaDown { color: var(--danger); }
+
+/* Proposal donut */
+.proposalStats { display: flex; align-items: center; gap: 28px; }
+.proposalRatioCircle { position: relative; width: 100px; height: 100px; flex-shrink: 0; }
+.donutSvg { width: 100%; height: 100%; }
+.donutLabel { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+.donutPct { font-family: var(--font-display); font-size: 20px; font-weight: 700; color: var(--black); line-height: 1; }
+.donutSub { font-size: 10px; font-weight: 500; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; }
+.proposalBreakdown { display: flex; flex-direction: column; gap: 12px; }
+.propStatRow { display: flex; align-items: center; gap: 10px; }
+.propStatDot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+.propStatNum { font-size: 18px; font-weight: 700; color: var(--black); line-height: 1; }
+.propStatLabel { font-size: 11.5px; color: var(--muted); margin-top: 1px; }
+
+/* Bar chart */
+.barChartWrap { overflow-x: auto; padding-bottom: 4px; }
+.barChartSvg { display: block; width: 100%; min-width: 260px; max-width: 500px; }
+.barRect { transition: fill 0.3s ease; }
+.barRect:hover { opacity: 0.8; }
+
+/* Skills demand */
+.skillsDemandList { display: flex; flex-direction: column; gap: 12px; }
+.skillDemandRow { display: flex; align-items: center; gap: 16px; }
+.skillDemandLeft { display: flex; align-items: center; gap: 14px; min-width: 180px; }
+.skillDemandRank { font-size: 12px; font-weight: 700; color: var(--muted); width: 18px; text-align: center; flex-shrink: 0; }
+.skillDemandName { font-size: 14px; font-weight: 600; color: var(--black); }
+.skillDemandCat { font-size: 11.5px; font-weight: 500; margin-top: 1px; }
+.skillDemandRight { display: flex; align-items: center; gap: 12px; flex: 1; }
+.skillDemandBar { flex: 1; height: 8px; background: var(--off-white); border-radius: 4px; overflow: hidden; }
+.skillDemandFill { height: 100%; border-radius: 4px; transition: width 0.6s cubic-bezier(0.34,1.56,0.64,1); }
+.skillDemandCount { font-size: 12px; font-weight: 600; color: var(--mid); white-space: nowrap; min-width: 48px; text-align: right; }
+
+/* Analytics tab pill */
+.tabAnalytics { position: relative; }
+.tabIcon { margin-right: 5px; font-size: 13px; }
+
+@media (max-width: 700px) {
+  .analyticsGrid { grid-template-columns: 1fr; }
+  .analyticsCardFull { grid-column: 1; }
+  .skillDemandLeft { min-width: 130px; }
+  .earningsValue { font-size: 28px; }
+}

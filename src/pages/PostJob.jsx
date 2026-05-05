@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useApp } from '../context/AppContext'
+import { formatCurrency } from '../utils/format'
 import styles from './PostJob.module.css'
 
 const CATS = ['Development & IT','Design & Creative','Writing & Translation','Finance & Accounting','Sales & Marketing','Engineering & Architecture','Legal','HR & Training','AI Services']
@@ -57,7 +58,7 @@ export default function PostJob() {
           {wallet.balance > 0 && (
             <div className={styles.walletHint}>
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="2" y="7" width="20" height="14" rx="2"/><circle cx="17" cy="14" r="1.5" fill="currentColor" stroke="none"/></svg>
-              Your wallet: <strong>${wallet.balance.toFixed(2)}</strong> available for escrow
+              Your wallet: <strong>{formatCurrency(wallet.balance, wallet.currency || 'NGN')}</strong> available for escrow
             </div>
           )}
         </div>
@@ -100,13 +101,25 @@ export default function PostJob() {
           </div>
 
           <div className={styles.field}>
-            <label className={styles.label}>{form.type === 'Hourly' ? 'Hourly rate (USD)' : 'Fixed budget (USD)'} <span className={styles.req}>*</span></label>
+            <label className={styles.label} htmlFor="post-budget">
+              {form.type === 'Hourly' ? 'Hourly rate (₦/hr)' : 'Fixed budget (₦)'}
+              <span className={styles.req}>*</span>
+            </label>
             <div className={styles.budgetWrap}>
-              <span className={styles.budgetPrefix}>$</span>
-              <input className={`${styles.input} ${styles.budgetInput} ${errors.budget?styles.inputErr:''}`} type="number" min="1" placeholder={form.type==='Hourly'?'50':'1000'} value={form.budget} onChange={e=>set('budget',e.target.value)}/>
-              {form.type==='Hourly' && <span className={styles.budgetSuffix}>/hr</span>}
+              <span className={styles.budgetPrefix}>₦</span>
+              <input
+                id="post-budget"
+                className={`${styles.input} ${styles.budgetInput} ${errors.budget ? styles.inputErr : ''}`}
+                type="number" min="1"
+                placeholder={form.type === 'Hourly' ? '5000' : '50000'}
+                value={form.budget}
+                onChange={e => set('budget', e.target.value)}
+                aria-invalid={!!errors.budget}
+                aria-describedby={errors.budget ? 'budget-error' : undefined}
+              />
+              {form.type === 'Hourly' && <span className={styles.budgetSuffix}>/hr</span>}
             </div>
-            {errors.budget && <p className={styles.errMsg}>{errors.budget}</p>}
+            {errors.budget && <p className={styles.errMsg} id="budget-error" role="alert">{errors.budget}</p>}
           </div>
 
           <button type="submit" className={styles.submitBtn} disabled={submitting}>

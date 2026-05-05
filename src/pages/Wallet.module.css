@@ -91,3 +91,11 @@
 
 @media (max-width: 1000px) { .statsRow { grid-template-columns: 1fr 1fr; } .infoGrid { grid-template-columns: 1fr; } }
 @media (max-width: 600px) { .statsRow { grid-template-columns: 1fr; } .historyHead { flex-direction: column; align-items: flex-start; } .escrowBanner { flex-direction: column; } }
+
+/* Added for enhanced Wallet */
+.presetActive { background: var(--black) !important; color: var(--white) !important; border-color: var(--black) !important; }
+.modalAction:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+.actionBtn:disabled   { opacity: 0.4; cursor: not-allowed; }
+.clearFilter { display: inline-block; margin-top: 10px; font-size: 13px; font-weight: 500; color: var(--black); text-decoration: underline; cursor: pointer; background: none; border: none; }
+.spinner { display: inline-block; width: 14px; height: 14px; border: 2px solid rgba(255,255,255,0.35); border-top-color: #fff; border-radius: 50%; animation: walletSpin 0.7s linear infinite; vertical-align: middle; margin-right: 6px; }
+@keyframes walletSpin { to { transform: rotate(360deg); } }

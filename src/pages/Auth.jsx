@@ -6,7 +6,7 @@ import styles from './Auth.module.css'
 
 // ── Map Firebase / network error codes → friendly messages ────────────────
 const AUTH_ERRORS = {
-  'auth/email-already-in-use':      'An account with this email already exists. Try logging in instead.',
+  'auth/email-already-in-use':      'Nice try this account has be used try Login.',
   'auth/user-not-found':            'No account found with this email address.',
   'auth/wrong-password':            'Incorrect password. Please try again.',
   'auth/invalid-credential':        'Incorrect email or password. Please check and try again.',

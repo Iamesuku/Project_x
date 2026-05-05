@@ -39,8 +39,9 @@
 .notifRow { display: flex; align-items: flex-start; gap: 12px; padding: 14px 18px; border-bottom: 1px solid var(--border); transition: background 0.15s; }
 .notifRow:last-child { border-bottom: none; }
 .notifRow:hover { background: var(--off-white); }
+.notifRow.notifRead { opacity: 0.65; }
 .notifDot { width: 8px; height: 8px; border-radius: 50%; background: var(--black); flex-shrink: 0; margin-top: 5px; }
-.notifRead { background: var(--border); }
+.notifDotRead { background: var(--border); }
 .notifInfo { flex: 1; }
 .notifText { font-size: 13px; color: var(--black); line-height: 1.45; }
 .notifTime { font-size: 11px; color: var(--muted); margin-top: 3px; }
@@ -64,8 +65,16 @@
 .hamburger.open span:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
 .mobileMenu { display: none; flex-direction: column; background: var(--white); border-top: 1px solid var(--border); max-height: 0; overflow: hidden; transition: max-height 0.35s var(--ease-out), padding 0.3s ease; }
 .mobileMenu.mobileOpen { max-height: 500px; padding: 16px 0 24px; }
-.mobileLink { padding: 13px 24px; font-size: 15px; color: var(--mid); transition: color 0.2s; }
+.mobileLink { padding: 13px 24px; font-size: 15px; color: var(--mid); transition: color 0.2s; display: flex; align-items: center; gap: 8px; }
 .mobileLink:hover { color: var(--black); }
+.mobileLinkPrimary { color: var(--black); font-weight: 600; }
+.mobileBadge { min-width: 18px; height: 18px; padding: 0 4px; border-radius: 9px; background: var(--black); color: var(--white); font-size: 10px; font-weight: 700; display: flex; align-items: center; justify-content: center; }
 .mobileDivider { height: 1px; background: var(--border); margin: 8px 24px; }
+.backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.3); z-index: 98; }
+/* Guest CTA buttons */
+.signInLink { font-size: 13px; font-weight: 500; color: var(--mid); padding: 7px 14px; border-radius: var(--radius-xl); transition: color 0.2s; }
+.signInLink:hover { color: var(--black); }
+.signUpBtn { font-size: 13px; font-weight: 600; color: var(--white); background: var(--black); padding: 8px 18px; border-radius: var(--radius-xl); transition: opacity 0.2s, transform 0.15s; }
+.signUpBtn:hover { opacity: 0.85; transform: translateY(-1px); }
 @media (max-width: 1000px) { .nav { gap: 18px; } }
 @media (max-width: 900px) { .nav, .actions { display: none; } .hamburger { display: flex; } .mobileMenu { display: flex; } }

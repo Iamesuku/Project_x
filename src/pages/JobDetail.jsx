@@ -1,17 +1,24 @@
 import { useState } from 'react'
 import { useParams, Link, useNavigate } from 'react-router-dom'
 import { useApp } from '../context/AppContext'
+import { formatCurrency } from '../utils/format'
 import styles from './JobDetail.module.css'
 
 export default function JobDetail() {
   const { id } = useParams()
   const navigate = useNavigate()
-  const { jobs, proposals, submitProposal, user, wallet, savedJobs, toggleSaveJob } = useApp()
+  const { jobs, proposals, submitProposal, user, wallet, savedJobs, toggleSaveJob, isLoggedIn } = useApp()
   const job = jobs.find(j => j.id === id)
   const [showForm, setShowForm] = useState(false)
   const [form, setForm] = useState({ bid: '', coverLetter: '' })
   const [submitted, setSubmitted] = useState(false)
   const [errors, setErrors] = useState({})
+  const [submitting, setSubmitting] = useState(false)
+
+  // Role guard: clients post jobs, they don't apply to them
+  const isClient     = user?.role === 'client'
+  const canApply     = isLoggedIn && !isClient
+  const currency     = wallet?.currency || 'NGN'
 
   if (!job) return (
     <div className={styles.notFound}>
@@ -28,17 +35,23 @@ export default function JobDetail() {
   function validate() {
     const e = {}
     if (!form.bid || isNaN(form.bid) || Number(form.bid) <= 0) e.bid = 'Enter a valid rate'
-    if (!form.coverLetter.trim() || form.coverLetter.length < 20) e.coverLetter = 'Cover letter must be at least 20 characters'
+    if (!form.coverLetter.trim() || form.coverLetter.length < 20)
+      e.coverLetter = 'Cover letter must be at least 20 characters'
     return e
   }
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault()
     const errs = validate()
     if (Object.keys(errs).length) { setErrors(errs); return }
-    submitProposal(id, { bid: Number(form.bid), coverLetter: form.coverLetter.trim() })
-    setSubmitted(true)
-    setShowForm(false)
+    setSubmitting(true)
+    try {
+      await submitProposal(id, { bid: Number(form.bid), coverLetter: form.coverLetter.trim() })
+      setSubmitted(true)
+      setShowForm(false)
+    } finally {
+      setSubmitting(false)
+    }
   }
 
   return (
@@ -87,62 +100,89 @@ export default function JobDetail() {
               </div>
             </div>
 
-            {/* ── Proposal area ── */}
+            {/* ── Proposal / action area ── */}
             {submitted ? (
               <div className={styles.successBox}>
                 <div className={styles.successIcon}>✓</div>
                 <div>
                   <p className={styles.successTitle}>Proposal submitted successfully!</p>
-                  <p className={styles.successSub}>The client will review your proposal and get back to you. You can track it in your <Link to="/dashboard" className={styles.successLink}>Dashboard</Link>.</p>
+                  <p className={styles.successSub}>
+                    The client will review your proposal. Track it in your{' '}
+                    <Link to="/dashboard" className={styles.successLink}>Dashboard</Link>.
+                  </p>
                 </div>
               </div>
             ) : alreadyApplied ? (
               <div className={styles.alreadyBox}>
                 <span>✓</span>
-                <span>You have already submitted a proposal for this project. Track it in your <Link to="/dashboard">Dashboard</Link>.</span>
+                <span>You already submitted a proposal. Track it in your <Link to="/dashboard">Dashboard</Link>.</span>
+              </div>
+            ) : !isLoggedIn ? (
+              // Guest prompt
+              <div className={styles.guestBox}>
+                <p className={styles.guestTitle}>Want to apply for this project?</p>
+                <p className={styles.guestSub}>Create a free account to submit a proposal in minutes.</p>
+                <Link to="/auth" className={styles.applyBtn}>Sign up & apply →</Link>
+              </div>
+            ) : isClient ? (
+              // Clients see a reminder that they post, not apply
+              <div className={styles.clientBox}>
+                <p className={styles.clientTitle}>You're browsing as a client</p>
+                <p className={styles.clientSub}>
+                  Switch to freelancer mode in your{' '}
+                  <Link to="/profile">profile settings</Link> to apply for jobs.
+                </p>
               </div>
             ) : !showForm ? (
               <button className={styles.applyBtn} onClick={() => setShowForm(true)}>
                 Apply for this project →
               </button>
             ) : (
-              <div className={styles.card}>
+              <div className={styles.card} role="form" aria-label="Submit proposal">
                 <h2 className={styles.sectionTitle} style={{marginBottom:24}}>Submit a Proposal</h2>
                 <form onSubmit={handleSubmit} className={styles.propForm} noValidate>
                   <div className={styles.field}>
-                    <label className={styles.label}>
-                      {job.type === 'Hourly' ? 'Your hourly rate (USD)' : 'Your bid (USD fixed)'}
+                    <label className={styles.label} htmlFor="bid-input">
+                      {job.type === 'Hourly' ? 'Your hourly rate (₦/hr)' : 'Your bid (₦ fixed)'}
                     </label>
                     <div className={`${styles.bidWrap} ${errors.bid ? styles.bidErr : ''}`}>
-                      <span className={styles.bidPrefix}>$</span>
+                      <span className={styles.bidPrefix}>₦</span>
                       <input
+                        id="bid-input"
                         className={styles.bidInput}
                         type="number" min="1"
-                        placeholder={job.type === 'Hourly' ? '50' : job.budget}
+                        placeholder={job.type === 'Hourly' ? '5000' : job.budget}
                         value={form.bid}
                         onChange={e => { setForm(f => ({...f, bid: e.target.value})); setErrors(e => ({...e, bid: ''})) }}
+                        aria-invalid={!!errors.bid}
+                        aria-describedby={errors.bid ? 'bid-error' : undefined}
                       />
                       {job.type === 'Hourly' && <span className={styles.bidSuffix}>/hr</span>}
                     </div>
-                    {errors.bid && <p className={styles.errMsg}>{errors.bid}</p>}
-                    <p className={styles.hint}>Client's budget: {job.type === 'Hourly' ? `$${job.budget}/hr` : `$${job.budget.toLocaleString()}`}</p>
+                    {errors.bid && <p className={styles.errMsg} id="bid-error" role="alert">{errors.bid}</p>}
+                    <p className={styles.hint}>Client's budget: {formatCurrency(job.budget, currency)}{job.type === 'Hourly' ? '/hr' : ''}</p>
                   </div>
 
                   <div className={styles.field}>
-                    <label className={styles.label}>Cover letter</label>
+                    <label className={styles.label} htmlFor="cover-input">Cover letter</label>
                     <textarea
+                      id="cover-input"
                       className={`${styles.textarea} ${errors.coverLetter ? styles.textareaErr : ''}`}
                       rows={6}
-                      placeholder="Why are you the right person for this project? Describe your experience, approach, and any relevant past work…"
+                      placeholder="Why are you the right person for this project?…"
                       value={form.coverLetter}
                       onChange={e => { setForm(f => ({...f, coverLetter: e.target.value})); setErrors(e => ({...e, coverLetter: ''})) }}
+                      aria-invalid={!!errors.coverLetter}
+                      aria-describedby={errors.coverLetter ? 'cover-error' : undefined}
                     />
-                    {errors.coverLetter && <p className={styles.errMsg}>{errors.coverLetter}</p>}
+                    {errors.coverLetter && <p className={styles.errMsg} id="cover-error" role="alert">{errors.coverLetter}</p>}
                     <p className={styles.hint}>{form.coverLetter.length} chars · minimum 20</p>
                   </div>
 
                   <div className={styles.formActions}>
-                    <button type="submit" className={styles.submitBtn}>Submit proposal →</button>
+                    <button type="submit" className={styles.submitBtn} disabled={submitting}>
+                      {submitting ? 'Submitting…' : 'Submit proposal →'}
+                    </button>
                     <button type="button" className={styles.cancelBtn} onClick={() => setShowForm(false)}>Cancel</button>
                   </div>
                 </form>

@@ -84,3 +84,17 @@
 .resetBtn:hover { opacity: 0.85; }
 
 @media (max-width: 900px) { .layout { grid-template-columns: 1fr; } .sidebar { position: static; } .fieldGrid { grid-template-columns: 1fr; } }
+
+/* Read-only email field */
+.label { font-size: 13px; font-weight: 500; color: var(--black); display: flex; align-items: center; gap: 8px; }
+.readonlyBadge { font-size: 10px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); background: var(--off-white); border: 1px solid var(--border); padding: 2px 8px; border-radius: var(--radius-xl); }
+.inputReadonly { background: var(--off-white) !important; color: var(--muted) !important; cursor: not-allowed; }
+.inputReadonly:focus { border-color: var(--border) !important; box-shadow: none !important; }
+.readonlyHint { font-size: 11.5px; color: var(--muted); line-height: 1.5; }
+
+/* Save button success state */
+.saveBtnSaved { background: var(--success) !important; }
+.saveBtnSaved:hover { background: var(--success) !important; }
+
+/* Bio limit warning */
+.hintWarn { color: #d97706 !important; }

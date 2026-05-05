@@ -310,10 +310,14 @@ export function AppProvider({ children }) {
   }, [])
 
   // ── Toast ──────────────────────────────────────────────────────────────
+  function dismissToast(id) {
+    setToasts(p => p.filter(t => t.id !== id))
+  }
+
   function toast(message, type = 'success') {
     const id = uid()
     setToasts(p => [...p, { id, message, type }])
-    setTimeout(() => setToasts(p => p.filter(t => t.id !== id)), 3500)
+    setTimeout(() => dismissToast(id), 3500)
   }
 
   // ── Notifications ──────────────────────────────────────────────────────
@@ -496,6 +500,15 @@ export function AppProvider({ children }) {
     }))
   }
 
+  function markContractComplete(contractId) {
+    setContracts(p => p.map(c => c.id === contractId ? { ...c, status: 'pending_approval' } : c))
+    const contract = contracts.find(c => c.id === contractId)
+    if (contract) {
+      addNotif(`"${contract.jobTitle}" has been marked complete by the freelancer. Please review and release payment.`, '/contracts')
+      toast('Work submitted — awaiting client approval')
+    }
+  }
+
   // ── Messages — legacy local helpers (Messages.jsx uses messageService directly) ────
   function getThreadKey(id1, id2) {
     return [id1, id2].sort().join('_')
@@ -545,27 +558,46 @@ export function AppProvider({ children }) {
 
   // ── Disputes ───────────────────────────────────────────────────────────
   function submitDispute({ contractId, jobTitle, freelancerName, amount, reason, description, evidenceCount }) {
-    const ticketNum = String(disputes.length + 4).padStart(3, '0')
-    const ticket = {
-      id:             `NXS-${ticketNum}`,
-      contractId,
-      jobTitle,
-      freelancerName,
-      amount,
-      reason,
-      description,
-      evidenceCount,
-      status:         'open',
-      priority:       'high',
-      createdAt:      today(),
-      resolverNote:   null,
-    }
-    setDisputes(p => [ticket, ...p])
+    // Use functional update to avoid stale closure on disputes.length
+    let createdTicket = null
+    setDisputes(prev => {
+      const ticketNum = String(prev.length + 4).padStart(3, '0')
+      const ticket = {
+        id:             `NXS-${ticketNum}`,
+        contractId,
+        jobTitle,
+        freelancerName,
+        amount,
+        reason,
+        description,
+        evidenceCount,
+        status:         'open',
+        priority:       'high',
+        createdAt:      today(),
+        resolverNote:   null,
+      }
+      createdTicket = ticket
+      return [ticket, ...prev]
+    })
     // Mark contract as disputed
     setContracts(p => p.map(c => c.id === contractId ? { ...c, status: 'disputed' } : c))
-    addNotif(`Dispute ticket ${ticket.id} filed for "${jobTitle}". Our team will review within 48 hours.`, '/support')
-    toast('Dispute submitted — ticket ID: ' + ticket.id)
-    return ticket
+    // Persist dispute to Firestore if logged in
+    if (firebaseUser) {
+      import('firebase/firestore').then(({ addDoc, collection, serverTimestamp }) => {
+        addDoc(collection(db, 'disputes'), {
+          contractId, jobTitle, freelancerName, amount, reason, description, evidenceCount,
+          userId: firebaseUser.uid, status: 'open', priority: 'high',
+          createdAt: serverTimestamp(),
+        }).catch(() => {})
+      })
+    }
+    setTimeout(() => {
+      if (createdTicket) {
+        addNotif(`Dispute ticket ${createdTicket.id} filed for "${jobTitle}". Our team will review within 48 hours.`, '/support')
+        toast('Dispute submitted — ticket ID: ' + createdTicket.id)
+      }
+    }, 0)
+    return createdTicket
   }
 
   return (
@@ -583,7 +615,7 @@ export function AppProvider({ children }) {
       // proposals
       proposals, submitProposal, acceptProposal,
       // contracts
-      contracts, updateContractProgress, toggleMilestone,
+      contracts, updateContractProgress, toggleMilestone, markContractComplete, releaseEscrow,
       // messages (legacy surface — Messages.jsx uses messageService directly)
       sendMessage, getThread, getContacts,
       // notifications
@@ -597,7 +629,7 @@ export function AppProvider({ children }) {
       // freelancers data
       freelancers,
       // toast
-      toast, toasts,
+      toast, toasts, dismissToast,
     }}>
       {children}
     </AppContext.Provider>

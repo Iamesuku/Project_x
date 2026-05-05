@@ -93,3 +93,13 @@
 .simMore:hover { color: var(--black); border-color: var(--black); }
 
 @media (max-width: 900px) { .layout { grid-template-columns: 1fr; } .sidebar { position: static; } }
+
+/* Role-guard boxes */
+.guestBox { background: var(--off-white); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 28px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 10px; }
+.guestTitle { font-size: 16px; font-weight: 600; color: var(--black); }
+.guestSub { font-size: 14px; color: var(--mid); line-height: 1.5; max-width: 320px; }
+.clientBox { background: #fffbeb; border: 1px solid #fcd34d; border-radius: var(--radius-lg); padding: 22px 28px; }
+.clientTitle { font-size: 14px; font-weight: 600; color: var(--warning); margin-bottom: 6px; }
+.clientSub { font-size: 13.5px; color: #78350f; line-height: 1.55; }
+.clientSub a { color: var(--warning); font-weight: 600; border-bottom: 1px solid #fcd34d; }
+.submitBtn:disabled { opacity: 0.55; cursor: not-allowed; }
