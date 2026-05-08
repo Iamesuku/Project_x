@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useApp } from '../context/AppContext'
+import { formatCurrency } from '../utils/format'
 import styles from './Support.module.css'
 
 const STATUS_META = {
@@ -81,7 +82,7 @@ function TicketCard({ ticket, expanded, onToggle }) {
           </div>
         </div>
         <div className={styles.ticketCardHeaderRight}>
-          <p className={styles.ticketAmount}>${ticket.amount.toLocaleString()}</p>
+          <p className={styles.ticketAmount}>{formatCurrency(ticket.amount)}</p>
           <p className={styles.ticketAmountLabel}>In dispute</p>
           <svg
             className={`${styles.chevron} ${expanded ? styles.chevronOpen : ''}`}
@@ -151,7 +152,7 @@ function TicketCard({ ticket, expanded, onToggle }) {
                 </div>
                 <div className={styles.infoCell}>
                   <span className={styles.infoCellLabel}>Contract value</span>
-                  <span className={styles.infoCellValue}>${ticket.amount.toLocaleString()}</span>
+                  <span className={styles.infoCellValue}>{formatCurrency(ticket.amount)}</span>
                 </div>
                 <div className={styles.infoCell}>
                   <span className={styles.infoCellLabel}>Expected SLA</span>

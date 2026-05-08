@@ -114,3 +114,24 @@ export function subscribeToThreads(userId, callback) {
 
   return unsub
 }
+
+/**
+ * markThreadRead — resets the unread counter for the current user's view of a thread.
+ *
+ * @param {string} userId    — the current user's ID
+ * @param {string} otherId   — the other participant's ID
+ */
+export async function markThreadRead(userId, otherId) {
+  const threadRef = ref(rtdb, `threads/${userId}/${otherId}`)
+  await new Promise((resolve) => {
+    onValue(
+      threadRef,
+      (snap) => {
+        const existing = snap.val()
+        if (!existing || (existing.unread || 0) === 0) { resolve(); return }
+        set(threadRef, { ...existing, unread: 0 }).then(resolve)
+      },
+      { onlyOnce: true }
+    )
+  })
+}

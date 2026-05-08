@@ -172,10 +172,10 @@ export default function Profile() {
 
                 {user.role === 'freelancer' && (
                   <div className={styles.field}>
-                    <label className={styles.label}>Hourly rate (USD)</label>
+                    <label className={styles.label}>Hourly rate (₦/hr)</label>
                     <div className={styles.rateWrap}>
-                      <span className={styles.ratePrefix}>$</span>
-                      <input className={`${styles.input} ${styles.rateInput}`} type="number" min="1" placeholder="e.g. 50" value={form.hourlyRate} onChange={e => set('hourlyRate', e.target.value)} />
+                      <span className={styles.ratePrefix}>₦</span>
+                      <input className={`${styles.input} ${styles.rateInput}`} type="number" min="1" placeholder="e.g. 5000" value={form.hourlyRate} onChange={e => set('hourlyRate', e.target.value)} />
                       <span className={styles.rateSuffix}>/hr</span>
                     </div>
                   </div>

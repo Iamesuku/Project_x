@@ -195,7 +195,9 @@ export default function JobDetail() {
             <div className={styles.sideCard}>
               <p className={styles.sideLabel}>Budget</p>
               <p className={styles.sideBudget}>
-                {job.type === 'Hourly' ? `$${job.budget}/hr` : `$${job.budget.toLocaleString()}`}
+                {job.type === 'Hourly'
+                  ? `${formatCurrency(job.budget, currency)}/hr`
+                  : formatCurrency(job.budget, currency)}
               </p>
               <p className={styles.sideType}>{job.type} price</p>
               <div className={styles.sideStats}>
@@ -219,16 +221,22 @@ export default function JobDetail() {
               )}
             </div>
 
-            {/* Wallet hint */}
+            {/* Wallet hint — only shown to logged-in users */}
+            {isLoggedIn && wallet && (
             <div className={styles.walletCard}>
               <div className={styles.walletCardTop}>
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="2" y="7" width="20" height="14" rx="2"/><circle cx="17" cy="14" r="1.5" fill="currentColor" stroke="none"/></svg>
                 <span className={styles.walletCardLabel}>Your wallet</span>
               </div>
-              <p className={styles.walletCardBal}>${wallet.balance.toFixed(2)}</p>
-              <p className={styles.walletCardSub}>{wallet.escrow > 0 ? `$${wallet.escrow.toFixed(2)} in escrow` : 'Available balance'}</p>
+              <p className={styles.walletCardBal}>{formatCurrency(wallet.balance ?? 0, currency)}</p>
+              <p className={styles.walletCardSub}>
+                {(wallet.escrow ?? 0) > 0
+                  ? `${formatCurrency(wallet.escrow, currency)} in escrow`
+                  : 'Available balance'}
+              </p>
               <Link to="/wallet" className={styles.walletCardLink}>Manage →</Link>
             </div>
+            )}
 
             {/* Similar jobs */}
             <div className={styles.similarCard}>
@@ -237,7 +245,11 @@ export default function JobDetail() {
                 <Link key={sj.id} to={`/job/${sj.id}`} className={styles.simRow}>
                   <div className={styles.simInfo}>
                     <p className={styles.simTitle}>{sj.title}</p>
-                    <p className={styles.simMeta}>{sj.type === 'Hourly' ? `$${sj.budget}/hr` : `$${sj.budget.toLocaleString()}`}</p>
+                    <p className={styles.simMeta}>
+                      {sj.type === 'Hourly'
+                        ? `${formatCurrency(sj.budget, currency)}/hr`
+                        : formatCurrency(sj.budget, currency)}
+                    </p>
                   </div>
                 </Link>
               ))}

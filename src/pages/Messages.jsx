@@ -5,6 +5,7 @@ import {
   sendMessage    as rtdbSendMessage,
   subscribeToThread,
   subscribeToThreads,
+  markThreadRead,
 } from '../firebase/messageService'
 import styles from './Messages.module.css'
 
@@ -53,6 +54,8 @@ export default function Messages() {
       return
     }
     const unsub = subscribeToThread(user.id, otherId, setThread)
+    // Clear unread badge as soon as the thread is opened
+    markThreadRead(user.id, otherId).catch(() => {})
     return unsub
   }, [otherId, user?.id])
 

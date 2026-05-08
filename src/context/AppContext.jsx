@@ -90,7 +90,7 @@ const SEED_DISPUTES = [
     status: 'resolved',
     priority: 'medium',
     createdAt: '2026-01-15',
-    resolverNote: 'After reviewing all evidence, NEXUS has determined that a partial refund of $240 will be issued for the 6 undelivered articles. Funds have been released from escrow.',
+    resolverNote: 'After reviewing all evidence, NEXUS has determined that a partial refund of ₦240 will be issued for the 6 undelivered articles. Funds have been released from escrow.',
   },
 ]
 

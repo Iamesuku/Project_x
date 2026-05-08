@@ -6,7 +6,7 @@ import styles from './Auth.module.css'
 
 // ── Map Firebase / network error codes → friendly messages ────────────────
 const AUTH_ERRORS = {
-  'auth/email-already-in-use':      'Nice try this account has be used try Login.',
+  'auth/email-already-in-use':      'An account with this email already exists. Try logging in instead.',
   'auth/user-not-found':            'No account found with this email address.',
   'auth/wrong-password':            'Incorrect password. Please try again.',
   'auth/invalid-credential':        'Incorrect email or password. Please check and try again.',
@@ -49,6 +49,19 @@ export default function Auth() {
   function set(k, v) {
     setForm(f => ({ ...f, [k]: v }))
     setErrors(e => ({ ...e, [k]: '', general: '' }))
+  }
+
+  // ── Password strength ────────────────────────────────────────────────────
+  function getPwdStrength(pwd) {
+    if (!pwd) return { score: 0, label: '', color: '' }
+    let score = 0
+    if (pwd.length >= 8)               score++
+    if (/[A-Z]/.test(pwd))             score++
+    if (/[0-9]/.test(pwd))             score++
+    if (/[^A-Za-z0-9]/.test(pwd))     score++
+    const labels = ['', 'Weak', 'Fair', 'Good', 'Strong']
+    const colors = ['', '#ef4444', '#f59e0b', '#3b82f6', '#22c55e']
+    return { score, label: labels[score], color: colors[score] }
   }
 
   // ── Validation ───────────────────────────────────────────────────────────
@@ -272,6 +285,24 @@ export default function Auth() {
                   </button>
                 </div>
                 {errors.password && <p className={styles.errMsg}>{errors.password}</p>}
+                {/* Password strength meter — signup only */}
+                {mode === 'signup' && form.password && (() => {
+                  const { score, label, color } = getPwdStrength(form.password)
+                  return (
+                    <div className={styles.pwdStrength}>
+                      <div className={styles.strengthBars}>
+                        {[1,2,3,4].map(i => (
+                          <div
+                            key={i}
+                            className={styles.strengthBar}
+                            style={{ background: i <= score ? color : 'var(--border, #e5e5e5)' }}
+                          />
+                        ))}
+                      </div>
+                      <span className={styles.strengthLabel} style={{ color }}>{label}</span>
+                    </div>
+                  )
+                })()}
               </div>
 
               {errors.general && (

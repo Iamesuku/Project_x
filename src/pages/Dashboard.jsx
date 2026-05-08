@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useApp } from '../context/AppContext'
+import { formatCurrency } from '../utils/format'
 import styles from './Dashboard.module.css'
 
 /* ── Analytics: pure-SVG bar chart ──────────────────────────────────────── */
@@ -39,7 +40,7 @@ function WeeklyBarChart({ data }) {
               fontWeight={isMax ? '700' : '500'}
               fill={isMax ? '#1a1a1a' : '#6b7280'}
             >
-              {d.value > 0 ? `$${d.value}` : '—'}
+              {d.value > 0 ? `₦${d.value.toLocaleString()}` : '—'}
             </text>
             {/* Week label below */}
             <text
@@ -155,7 +156,7 @@ function AnalyticsTab({ contracts, proposals, user, transactions }) {
         <div className={styles.earningsRow}>
           <div className={styles.earningsBlock}>
             <p className={styles.earningsLabel}>This month</p>
-            <p className={styles.earningsValue}>${earningsThisMonth.toLocaleString()}</p>
+            <p className={styles.earningsValue}>{formatCurrency(earningsThisMonth)}</p>
             <div className={`${styles.earningsDelta} ${earningsDelta >= 0 ? styles.deltaUp : styles.deltaDown}`}>
               {earningsDelta >= 0 ? '▲' : '▼'} {Math.abs(earningsPct)}%
               <span> vs last month</span>
@@ -164,7 +165,7 @@ function AnalyticsTab({ contracts, proposals, user, transactions }) {
           <div className={styles.earningsDivider} />
           <div className={`${styles.earningsBlock} ${styles.earningsBlockMuted}`}>
             <p className={styles.earningsLabel}>Last month</p>
-            <p className={styles.earningsValueSm}>${earningsLastMonth.toLocaleString()}</p>
+            <p className={styles.earningsValueSm}>{formatCurrency(earningsLastMonth)}</p>
           </div>
         </div>
       </div>
@@ -225,7 +226,7 @@ function AnalyticsTab({ contracts, proposals, user, transactions }) {
       <div className={`${styles.analyticsCard} ${styles.analyticsCardFull}`}>
         <div className={styles.analyticsCardHead}>
           <h3 className={styles.analyticsCardTitle}>Weekly Earnings — Past 4 Weeks</h3>
-          <span className={styles.analyticsBadge}>${totalWeekly.toLocaleString()} total</span>
+          <span className={styles.analyticsBadge}>{formatCurrency(totalWeekly)} total</span>
         </div>
         <div className={styles.barChartWrap}>
           <WeeklyBarChart data={weeklyData} />
@@ -344,14 +345,14 @@ export default function Dashboard() {
           <div className={styles.tabContent}>
             <div className={styles.kpiRow}>
               {(isClient ? [
-                { label:'Wallet Balance',  value:`₦${(wallet.balance||0).toLocaleString()}`, sub:'Available',      link:'/wallet' },
-                { label:'In Escrow',       value:`₦${(wallet.escrow||0).toLocaleString()}`,  sub:'Protected',      link:'/wallet', accent: (wallet.escrow||0) > 0 },
+                { label:'Wallet Balance',  value:formatCurrency(wallet.balance||0), sub:'Available',      link:'/wallet' },
+                { label:'In Escrow',       value:formatCurrency(wallet.escrow||0),  sub:'Protected',      link:'/wallet', accent: (wallet.escrow||0) > 0 },
                 { label:'Active Contracts',value: activeContracts.length,                     sub:'In progress',    link:'/contracts' },
                 { label:'Jobs Posted',     value: postedJobs.length,                          sub:'All time',       link:null },
                 { label:'Proposals In',    value: totalProposals,                             sub:'Total received', link:null },
               ] : [
-                { label:'Wallet Balance',  value:`₦${(wallet.balance||0).toLocaleString()}`, sub:'Available',   link:'/wallet' },
-                { label:'Total Earned',    value:`₦${(wallet.earned||0).toLocaleString()}`,  sub:'Lifetime',    link:'/wallet' },
+                { label:'Wallet Balance',  value:formatCurrency(wallet.balance||0), sub:'Available',   link:'/wallet' },
+                { label:'Total Earned',    value:formatCurrency(wallet.earned||0),  sub:'Lifetime',    link:'/wallet' },
                 { label:'Active Contracts',value: activeContracts.length,                     sub:'In progress', link:'/contracts' },
                 { label:'Jobs Applied',    value: appliedJobs.length,                         sub:'All time',    link:null },
               ]).map(k => (
@@ -387,7 +388,7 @@ export default function Dashboard() {
                           <p className={styles.miniMeta}>{isClient ? `${item.category} · ${item.posted}` : `${item.progress}% complete`}</p>
                         </div>
                         <span className={styles.miniBadge}>
-                          {isClient ? `${proposals[item.id]?.length || item.proposals} proposals` : `$${item.amount.toLocaleString()}`}
+                          {isClient ? `${proposals[item.id]?.length || item.proposals} proposals` : formatCurrency(item.amount)}
                         </span>
                       </Link>
                     ))}
@@ -415,7 +416,7 @@ export default function Dashboard() {
                             <p className={styles.miniMeta}>{tx.date} · {tx.status}</p>
                           </div>
                           <p className={`${styles.miniAmount} ${pos ? styles.amtPos : styles.amtNeg}`}>
-                            {pos?'+':'-'}${Math.abs(tx.amount).toFixed(2)}
+                            {pos?'+':'-'}{formatCurrency(Math.abs(tx.amount))}
                           </p>
                         </div>
                       )
@@ -450,7 +451,7 @@ export default function Dashboard() {
                         <p className={styles.jobCardMeta}>{job.category} · Posted {job.posted} · {job.type}</p>
                       </div>
                       <div className={styles.jobCardRight}>
-                        <span className={styles.jobCardBudget}>{job.type==='Hourly'?`$${job.budget}/hr`:`$${job.budget.toLocaleString()}`}</span>
+                        <span className={styles.jobCardBudget}>{job.type==='Hourly'?`${formatCurrency(job.budget)}/hr`:formatCurrency(job.budget)}</span>
                         <span className={`${styles.jobStatus} ${styles[`jobStatus_${job.status}`]}`}>{job.status.replace('_',' ')}</span>
                       </div>
                     </div>
@@ -496,7 +497,7 @@ export default function Dashboard() {
                                 <p className={styles.propTitle}>{p.freelancer?.title||''}</p>
                               </div>
                               <div className={styles.propRight}>
-                                <p className={styles.propBid}>{job.type==='Hourly'?`$${p.bid}/hr`:`$${Number(p.bid).toLocaleString()}`}</p>
+                                <p className={styles.propBid}>{job.type==='Hourly'?`${formatCurrency(p.bid)}/hr`:formatCurrency(Number(p.bid))}</p>
                                 {p.status==='accepted'
                                   ? <span className={styles.propAcceptedBadge}>✓ Accepted</span>
                                   : wallet.balance >= p.bid
@@ -544,7 +545,7 @@ export default function Dashboard() {
                       <p className={styles.jobCardDesc}>{job.description}</p>
                       <div className={styles.jobCardFoot}>
                         <div className={styles.jobCardSkills}>{job.skills.map(s=><span key={s} className={styles.skill}>{s}</span>)}</div>
-                        <span className={styles.proposalCount}>Your bid: {job.type==='Hourly'?`$${myProp?.bid}/hr`:`$${myProp?.bid}`}</span>
+                        <span className={styles.proposalCount}>Your bid: {job.type==='Hourly'?`${formatCurrency(myProp?.bid)}/hr`:formatCurrency(myProp?.bid)}</span>
                       </div>
                     </Link>
                   )
@@ -572,7 +573,7 @@ export default function Dashboard() {
                         <p className={styles.jobCardTitle}>{c.jobTitle}</p>
                         <p className={styles.jobCardMeta}>Client: {c.clientName} · Started {c.startDate}</p>
                       </div>
-                      <span className={styles.jobCardBudget}>${c.amount.toLocaleString()}</span>
+                      <span className={styles.jobCardBudget}>{formatCurrency(c.amount)}</span>
                     </div>
                     <div className={styles.progressRow}>
                       <span style={{fontSize:13,color:'var(--mid)'}}>Progress: {c.progress}%</span>
@@ -627,7 +628,7 @@ export default function Dashboard() {
                       </div>
                       <div className={styles.actRight}>
                         <p className={`${styles.actAmount} ${pos?styles.amtPos:styles.amtNeg}`}>
-                          {pos?'+':'-'}${Math.abs(tx.amount).toFixed(2)}
+                          {pos?'+':'-'}{formatCurrency(Math.abs(tx.amount))}
                         </p>
                         <span className={`${styles.actStatus} ${tx.status==='completed'?styles.actComplete:styles.actPending}`}>{tx.status}</span>
                       </div>

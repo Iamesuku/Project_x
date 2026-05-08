@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react'
 import { useApp } from '../context/AppContext'
+import { formatCurrency } from '../utils/format'
 import styles from './DisputeModal.module.css'
 
 const DISPUTE_REASONS = [
@@ -133,7 +134,7 @@ export default function DisputeModal({ contract, onClose }) {
           </div>
           <div className={styles.contractRefRight}>
             <p className={styles.contractRefLabel}>Value</p>
-            <p className={styles.contractRefAmount}>${contract.amount.toLocaleString()}</p>
+            <p className={styles.contractRefAmount}>{formatCurrency(contract.amount)}</p>
           </div>
         </div>
 

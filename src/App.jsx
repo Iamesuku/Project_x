@@ -1,10 +1,11 @@
-import { lazy, Suspense } from 'react'
+import { lazy, Suspense, useState, useEffect } from 'react'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { AppProvider, useApp } from './context/AppContext'
 import ErrorBoundary from './components/ErrorBoundary'
 import Navbar        from './components/Navbar'
 import Footer        from './components/Footer'
 import ToastContainer from './components/Toast'
+import OnboardingModal from './components/OnboardingModal'
 
 // ── Eager-loaded (above-the-fold critical paths) ──────────────────────────
 import Home              from './pages/Home'
@@ -120,7 +121,23 @@ function NotFound() {
 
 // ── All routes ────────────────────────────────────────────────────────────
 function AppRoutes() {
-  const { isLoading } = useApp()
+  const { isLoading, isLoggedIn, user, updateUser } = useApp()
+  const [showOnboarding, setShowOnboarding] = useState(false)
+
+  // Show onboarding modal for first-time users (no localStorage flag)
+  useEffect(() => {
+    if (!isLoggedIn || isLoading) return
+    const alreadyOnboarded = localStorage.getItem('nexus_onboarded')
+    if (!alreadyOnboarded) {
+      setShowOnboarding(true)
+    }
+  }, [isLoggedIn, isLoading])
+
+  async function handleOnboardingComplete(role) {
+    updateUser({ role })
+    localStorage.setItem('nexus_onboarded', '1')
+    setShowOnboarding(false)
+  }
 
   if (isLoading) return <LoadingScreen />
 
@@ -179,6 +196,12 @@ function AppRoutes() {
         <Route path="*" element={<WithLayout><NotFound /></WithLayout>} />
       </Routes>
       <ToastContainer />
+      {showOnboarding && (
+        <OnboardingModal
+          userName={user?.name}
+          onComplete={handleOnboardingComplete}
+        />
+      )}
     </Suspense>
   )
 }

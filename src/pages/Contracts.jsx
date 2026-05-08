@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useApp } from '../context/AppContext'
+import { formatCurrency } from '../utils/format'
 import styles from './Contracts.module.css'
 import DisputeModal from '../components/DisputeModal'
 
@@ -46,7 +47,7 @@ function ApproveModal({ contract, onClose, onConfirm }) {
               </svg>
             </div>
             <h2 className={styles.successTitle}>Payment Released!</h2>
-            <p className={styles.successAmount}>${contract.amount.toLocaleString()}</p>
+            <p className={styles.successAmount}>{formatCurrency(contract.amount)}</p>
             <p className={styles.successMsg}>
               Payment released to <strong>{contract.freelancerName}</strong>
             </p>
@@ -84,20 +85,20 @@ function ApproveModal({ contract, onClose, onConfirm }) {
             </div>
             <div className={styles.modalInfoItem}>
               <p className={styles.modalInfoLabel}>Contract Amount</p>
-              <p className={styles.modalAmount}>${contract.amount.toLocaleString()}</p>
+              <p className={styles.modalAmount}>{formatCurrency(contract.amount)}</p>
             </div>
           </div>
 
           <div className={styles.modalWarning}>
             <span className={styles.modalWarningIcon}>⚠️</span>
-            <p>By confirming, you approve the work and release <strong>${contract.amount.toLocaleString()}</strong> from escrow to {contract.freelancerName}. This action cannot be undone.</p>
+            <p>By confirming, you approve the work and release <strong>{formatCurrency(contract.amount)}</strong> from escrow to {contract.freelancerName}. This action cannot be undone.</p>
           </div>
         </div>
 
         <div className={styles.modalFooter}>
           <button className={styles.modalCancelBtn} onClick={onClose}>Cancel</button>
           <button className={styles.modalConfirmBtn} onClick={handleConfirm}>
-            ✓ Confirm &amp; Release ${contract.amount.toLocaleString()}
+            ✓ Confirm &amp; Release {formatCurrency(contract.amount)}
           </button>
         </div>
       </div>
@@ -131,7 +132,7 @@ function ContractCard({ contract, onRelease, onToggleMilestone, onDispute, onApp
           </div>
         </div>
         <div className={styles.cardHeadRight}>
-          <p className={styles.contractAmount}>${contract.amount.toLocaleString()}</p>
+          <p className={styles.contractAmount}>{formatCurrency(contract.amount)}</p>
           <p className={styles.contractAmountLabel}>Contract value</p>
         </div>
       </div>
@@ -225,7 +226,7 @@ function ContractCard({ contract, onRelease, onToggleMilestone, onDispute, onApp
         <div className={styles.releasePanel}>
           <p className={styles.releasePanelTitle}>Release escrow payment</p>
           <p className={styles.releasePanelSub}>
-            This will release <strong>${contract.amount.toLocaleString()}</strong> to {contract.freelancerName}.
+            This will release <strong>{formatCurrency(contract.amount)}</strong> to {contract.freelancerName}.
             Only do this when you have approved the work.
           </p>
           {wallet.escrow >= contract.amount ? (
@@ -290,7 +291,7 @@ export default function Contracts() {
             { label: 'Active contracts',   value: active,    accent: active > 0 },
             { label: 'Awaiting approval',  value: pending,   amber: pending > 0 },
             { label: 'Completed',          value: completed },
-            { label: 'In escrow',          value: `$${wallet.escrow.toFixed(2)}` },
+            { label: 'In escrow',          value: formatCurrency(wallet.escrow ?? 0) },
           ].map(s => (
             <div key={s.label} className={`${styles.statCard} ${s.accent ? styles.statAccent : ''} ${s.danger ? styles.statDanger : ''} ${s.amber ? styles.statAmber : ''}`}>
               <p className={styles.statLabel}>{s.label}</p>
