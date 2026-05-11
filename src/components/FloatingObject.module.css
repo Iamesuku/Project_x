@@ -1,0 +1,14 @@
+.floatObj {
+  position: absolute;
+  will-change: transform;
+  pointer-events: none;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-12px); }
+}
+
+@keyframes spin360 {
+  to { transform: rotate(360deg); }
+}

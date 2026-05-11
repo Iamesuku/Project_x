@@ -1,7 +1,8 @@
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Link } from 'react-router-dom'
 import { useApp } from '../context/AppContext'
 import { formatCurrency } from '../utils/format'
+import { useScrollReveal, useCountUp } from '../hooks/useScrollReveal'
 import styles from './Contracts.module.css'
 import DisputeModal from '../components/DisputeModal'
 
@@ -18,10 +19,43 @@ const STATUS_COLORS = {
   pending_approval: 'amber',
 }
 
-function ProgressBar({ value }) {
+/* Segmented progress bar — each segment = one milestone */
+function ProgressBar({ value, milestones }) {
+  const total = milestones?.length || 1
+  const done  = milestones?.filter(m => m.done).length || 0
   return (
-    <div className={styles.progressBar}>
-      <div className={styles.progressFill} style={{ width: `${Math.min(100, Math.max(0, value))}%` }} />
+    <div className={styles.progressBar} role="progressbar" aria-valuenow={value} aria-valuemin={0} aria-valuemax={100}>
+      {milestones?.length > 1 ? (
+        <div className={styles.segmentedBar}>
+          {milestones.map((m, i) => (
+            <div
+              key={i}
+              className={`${styles.segment} ${m.done ? styles.segmentDone : ''}`}
+              title={m.label}
+            />
+          ))}
+        </div>
+      ) : (
+        <div className={styles.progressFill} style={{ width: `${Math.min(100, Math.max(0, value))}%` }} />
+      )}
+    </div>
+  )
+}
+
+/* Animated stat card with counter */
+function StatCard({ label, numericValue, displayValue, accent, amber }) {
+  const [ref, vis] = useScrollReveal(0.1)
+  const count = useCountUp(numericValue ?? 0, vis && numericValue != null)
+  return (
+    <div
+      ref={ref}
+      className={`${styles.statCard} ${accent ? styles.statAccent : ''} ${amber ? styles.statAmber : ''}`}
+      style={{ opacity: vis ? 1 : 0, transform: vis ? 'translateY(0)' : 'translateY(16px)', transition: 'opacity 0.5s ease, transform 0.5s var(--ease-out)' }}
+    >
+      <p className={styles.statLabel}>{label}</p>
+      <p className={styles.statValue}>
+        {numericValue != null ? count : displayValue}
+      </p>
     </div>
   )
 }
@@ -143,23 +177,34 @@ function ContractCard({ contract, onRelease, onToggleMilestone, onDispute, onApp
           <span className={styles.sectionLabel}>Progress</span>
           <span className={styles.progressPct}>{contract.progress}%</span>
         </div>
-        <ProgressBar value={contract.progress} />
+        <ProgressBar value={contract.progress} milestones={contract.milestones} />
       </div>
 
-      {/* Milestones */}
+      {/* Milestones — timeline style */}
       <div className={styles.section}>
         <p className={styles.sectionLabel}>Milestones</p>
-        <div className={styles.milestones}>
+        <div className={styles.timeline}>
           {contract.milestones.map((m, i) => (
-            <button
-              key={i}
-              className={`${styles.milestone} ${m.done ? styles.milestoneDone : ''}`}
-              onClick={() => onToggleMilestone(contract.id, i)}
-              disabled={contract.status === 'completed' || contract.status === 'pending_approval'}
-            >
-              <span className={styles.milestoneCheck}>{m.done ? '✓' : ''}</span>
-              <span className={styles.milestoneLabel}>{m.label}</span>
-            </button>
+            <div key={i} className={`${styles.timelineItem} ${m.done ? styles.timelineDone : ''}`}>
+              {/* Connector line */}
+              {i < contract.milestones.length - 1 && (
+                <div className={`${styles.timelineConnector} ${m.done ? styles.timelineConnectorDone : ''}`} />
+              )}
+              <button
+                className={styles.timelineCheck}
+                onClick={() => onToggleMilestone(contract.id, i)}
+                disabled={contract.status === 'completed' || contract.status === 'pending_approval'}
+                aria-label={m.done ? `Unmark: ${m.label}` : `Mark complete: ${m.label}`}
+                aria-pressed={m.done}
+              >
+                {m.done && (
+                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                    <polyline points="20 6 9 17 4 12" />
+                  </svg>
+                )}
+              </button>
+              <span className={styles.timelineLabel}>{m.label}</span>
+            </div>
           ))}
         </div>
       </div>
@@ -285,19 +330,12 @@ export default function Contracts() {
           <Link to="/post-job" className={styles.newJobBtn}>+ Post a new job</Link>
         </div>
 
-        {/* Stats */}
+        {/* Stats — animated counters */}
         <div className={styles.statsRow}>
-          {[
-            { label: 'Active contracts',   value: active,    accent: active > 0 },
-            { label: 'Awaiting approval',  value: pending,   amber: pending > 0 },
-            { label: 'Completed',          value: completed },
-            { label: 'In escrow',          value: formatCurrency(wallet.escrow ?? 0) },
-          ].map(s => (
-            <div key={s.label} className={`${styles.statCard} ${s.accent ? styles.statAccent : ''} ${s.danger ? styles.statDanger : ''} ${s.amber ? styles.statAmber : ''}`}>
-              <p className={styles.statLabel}>{s.label}</p>
-              <p className={styles.statValue}>{s.value}</p>
-            </div>
-          ))}
+          <StatCard label="Active contracts"  numericValue={active}    accent={active > 0} />
+          <StatCard label="Awaiting approval" numericValue={pending}   amber={pending > 0} />
+          <StatCard label="Completed"         numericValue={completed} />
+          <StatCard label="In escrow"         displayValue={formatCurrency(wallet.escrow ?? 0)} />
         </div>
 
         {/* Filter */}

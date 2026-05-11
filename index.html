@@ -3,12 +3,26 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>NEXUS — Connect. Create. Deliver.</title>
+    <title>NEXUS — Campus Freelance Marketplace</title>
+    <meta name="description" content="NEXUS connects skilled student freelancers with clients on campus. Escrow-protected payments, verified university accounts, zero platform fees." />
+
+    <!-- Dark mode: read localStorage BEFORE paint to prevent flash -->
+    <script>
+      try {
+        var theme = localStorage.getItem('nexus_theme')
+        if (theme === 'dark') document.documentElement.setAttribute('data-theme', 'dark')
+      } catch(e) {}
+    </script>
+
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
   </head>
   <body>
+    <a href="#main-content" class="skip-to-content">Skip to content</a>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>

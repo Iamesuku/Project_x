@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { useApp } from '../context/AppContext'
 import { signUp, logIn, resetPassword, signInWithGoogle } from '../firebase/authService'
+import { useParticleCanvas } from '../hooks/useScrollReveal'
 import styles from './Auth.module.css'
 
 // ── Map Firebase / network error codes → friendly messages ────────────────
@@ -146,30 +147,22 @@ export default function Auth() {
   }
 
   const anyLoading = loading || googleLoad
+  const canvasRef = useParticleCanvas(true)
 
   // ── Render ────────────────────────────────────────────────────────────────
   return (
     <div className={styles.page}>
-      <div className={styles.split}>
+      {/* Animated particle canvas background */}
+      <canvas ref={canvasRef} className={styles.canvas} aria-hidden="true" />
 
-        {/* Left brand panel */}
-        <div className={styles.leftPanel}>
-          <Link to="/" className={styles.backHome}>← nexus</Link>
-          <div className={styles.leftContent}>
-            <h1 className={styles.leftTitle}>
-              {mode === 'login' ? 'Welcome\nback.' : 'Start your\njourney.'}
-            </h1>
-            <p className={styles.leftSub}>
-              {mode === 'login'
-                ? 'Log back in and pick up where you left off.'
-                : 'Join students sharing skills and getting things done on campus.'}
-            </p>
-          </div>
-        </div>
+      {/* Back home link */}
+      <Link to="/" className={styles.backHome}>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="15 18 9 12 15 6"/></svg>
+        NEXUS
+      </Link>
 
-        {/* Right form panel */}
-        <div className={styles.rightPanel}>
-          <div className={styles.formWrap}>
+      {/* Frosted glass form card */}
+      <div className={styles.formCard} role="main">
 
             <div className={styles.modeSwitcher}>
               <button className={`${styles.modeTab} ${mode==='login'  ? styles.modeActive : ''}`} onClick={() => switchMode('login')}>Log in</button>
@@ -363,8 +356,6 @@ export default function Auth() {
               <Link to="#" className={styles.termsLink}>Terms</Link> and{' '}
               <Link to="#" className={styles.termsLink}>Privacy Policy</Link>.
             </p>
-          </div>
-        </div>
       </div>
     </div>
   )
