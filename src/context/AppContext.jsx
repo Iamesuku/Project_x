@@ -273,6 +273,18 @@ export function AppProvider({ children }) {
         if (unique.length > 0) setContracts(unique); else setContracts(SEED_CONTRACTS)
       } catch { setContracts(SEED_CONTRACTS) }
 
+      // ── Load proposals ──
+      try {
+        const propsSnap = await getDocs(collection(db, 'proposals'))
+        const fsProps = propsSnap.docs.map(d => ({ id: d.id, ...d.data() }))
+        const propsMap = {}
+        fsProps.forEach(p => {
+          if (!propsMap[p.jobId]) propsMap[p.jobId] = []
+          propsMap[p.jobId].push(p)
+        })
+        setProposals(propsMap)
+      } catch { setProposals({}) }
+
       // ── Load & real-time listen to notifications ──
       try {
         if (unsubNotifs.current) unsubNotifs.current()
@@ -443,9 +455,28 @@ export function AppProvider({ children }) {
 
   // ── Proposals ──────────────────────────────────────────────────────────
   function submitProposal(jobId, data) {
-    const p = { id:`p${uid()}`, ...data, freelancer:user, status:'pending', submittedAt:new Date().toISOString() }
+    const newId = `p${uid()}`
+    const p = { id:newId, jobId, ...data, freelancer:user, status:'pending', submittedAt:new Date().toISOString() }
     setProposals(prev => ({ ...prev, [jobId]: [...(prev[jobId]||[]), p] }))
-    setJobs(prev => prev.map(j => j.id === jobId ? { ...j, proposals: j.proposals + 1 } : j))
+    setJobs(prev => prev.map(j => j.id === jobId ? { ...j, proposals: (j.proposals || 0) + 1 } : j))
+    
+    if (firebaseUser) {
+      addDoc(collection(db, 'proposals'), { ...p, createdAt: serverTimestamp() })
+        .then(docRef => {
+          // Update id to the firestore id
+          setProposals(prev => ({
+            ...prev,
+            [jobId]: prev[jobId].map(prop => prop.id === newId ? { ...prop, id: docRef.id } : prop)
+          }))
+        })
+        .catch(() => {})
+      // Update job proposals count
+      const job = jobs.find(j => j.id === jobId)
+      if (job) {
+        updateDoc(doc(db, 'jobs', jobId), { proposals: (job.proposals || 0) + 1 }).catch(() => {})
+      }
+    }
+    
     toast('Proposal submitted!')
   }
 
@@ -457,6 +488,11 @@ export function AppProvider({ children }) {
     const job = jobs.find(j => j.id === jobId)
     fundEscrow(jobId, amount, job?.title || 'Project')
     updateJobStatus(jobId, 'in_progress')
+
+    if (firebaseUser) {
+      updateDoc(doc(db, 'proposals', proposalId), { status: 'accepted' }).catch(() => {})
+      updateDoc(doc(db, 'jobs', jobId), { status: 'in_progress' }).catch(() => {})
+    }
 
     const contract = {
       id: `c${uid()}`,
