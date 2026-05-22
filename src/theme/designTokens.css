@@ -1,0 +1,29 @@
+:root {
+  --font-family: 'Inter', sans-serif;
+  --color-primary-light: #3b82f6; /* indigo-500 */
+  --color-primary-dark: #60a5fa; /* indigo-400 */
+  --bg-color-light: #f9fafb; /* gray-50 */
+  --bg-color-dark: #111827; /* gray-900 */
+  --text-primary-light: #111827; /* gray-900 */
+  --text-primary-dark: #f9fafb; /* gray-50 */
+  --muted-light: #6b7280; /* gray-500 */
+  --muted-dark: #9ca3af; /* gray-400 */
+  --card-bg-light: rgba(255,255,255,0.8);
+  --card-bg-dark: rgba(255,255,255,0.1);
+  --glass-bg-light: rgba(255,255,255,0.25);
+  --glass-bg-dark: rgba(0,0,0,0.25);
+}
+[data-theme="dark"] {
+  --bg-color: var(--bg-color-dark);
+  --text-primary: var(--text-primary-dark);
+  --muted: var(--muted-dark);
+  --card-bg: var(--card-bg-dark);
+  --glass-bg: var(--glass-bg-dark);
+}
+[data-theme="light"] {
+  --bg-color: var(--bg-color-light);
+  --text-primary: var(--text-primary-light);
+  --muted: var(--muted-light);
+  --card-bg: var(--card-bg-light);
+  --glass-bg: var(--glass-bg-light);
+}

@@ -34,11 +34,11 @@
 .applyBtn { display: block; width: 100%; padding: 16px; background: var(--black); color: var(--white); border-radius: var(--radius-lg); font-size: 15px; font-weight: 500; text-align: center; transition: background 0.2s, transform 0.15s; border: none; cursor: pointer; }
 .applyBtn:hover { background: var(--charcoal); transform: translateY(-1px); }
 
-.successBox { display: flex; align-items: flex-start; gap: 16px; background: var(--success-bg); border: 1px solid #6ee7b7; border-radius: var(--radius-lg); padding: 24px 28px; }
-.successIcon { width: 36px; height: 36px; border-radius: 50%; background: var(--success); color: var(--white); font-size: 15px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-.successTitle { font-size: 15px; font-weight: 600; color: var(--success); margin-bottom: 6px; }
-.successSub { font-size: 13.5px; color: #065f46; line-height: 1.55; }
-.successLink { color: var(--success); font-weight: 600; border-bottom: 1px solid #6ee7b7; }
+.successBox { display: flex; align-items: flex-start; gap: 16px; background: var(--nexus-success-bg); border: 1px solid rgba(52,211,153,0.3); border-radius: var(--radius-lg); padding: 24px 28px; }
+.successIcon { width: 36px; height: 36px; border-radius: 50%; background: var(--nexus-success); color: var(--white); font-size: 15px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.successTitle { font-size: 15px; font-weight: 600; color: var(--nexus-success); margin-bottom: 6px; }
+.successSub { font-size: 13.5px; color: var(--nexus-mid); line-height: 1.55; }
+.successLink { color: var(--nexus-success); font-weight: 600; border-bottom: 1px solid rgba(52,211,153,0.3); }
 .alreadyBox { display: flex; align-items: center; gap: 12px; background: var(--off-white); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 18px 24px; font-size: 14px; color: var(--mid); }
 .alreadyBox a { color: var(--black); font-weight: 500; border-bottom: 1px solid var(--border); }
 
@@ -98,8 +98,8 @@
 .guestBox { background: var(--off-white); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 28px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 10px; }
 .guestTitle { font-size: 16px; font-weight: 600; color: var(--black); }
 .guestSub { font-size: 14px; color: var(--mid); line-height: 1.5; max-width: 320px; }
-.clientBox { background: #fffbeb; border: 1px solid #fcd34d; border-radius: var(--radius-lg); padding: 22px 28px; }
-.clientTitle { font-size: 14px; font-weight: 600; color: var(--warning); margin-bottom: 6px; }
-.clientSub { font-size: 13.5px; color: #78350f; line-height: 1.55; }
-.clientSub a { color: var(--warning); font-weight: 600; border-bottom: 1px solid #fcd34d; }
+.clientBox { background: var(--nexus-warn-bg); border: 1px solid rgba(217,119,6,0.3); border-radius: var(--radius-lg); padding: 22px 28px; }
+.clientTitle { font-size: 14px; font-weight: 600; color: var(--nexus-warn); margin-bottom: 6px; }
+.clientSub { font-size: 13.5px; color: var(--nexus-mid); line-height: 1.55; }
+.clientSub a { color: var(--nexus-warn); font-weight: 600; border-bottom: 1px solid rgba(217,119,6,0.3); }
 .submitBtn:disabled { opacity: 0.55; cursor: not-allowed; }

@@ -2,7 +2,7 @@ import { createContext, useContext, useState, useEffect, useCallback, useRef } f
 import {
   doc, getDoc, setDoc, updateDoc,
   collection, getDocs, addDoc, onSnapshot,
-  query, where, orderBy, serverTimestamp, deleteDoc,
+  query, where, orderBy, serverTimestamp, deleteDoc, or
 } from 'firebase/firestore'
 import { signOut } from 'firebase/auth'
 import { ref, onValue } from 'firebase/database'
@@ -126,7 +126,7 @@ function saveLS(key, val) {
 async function getAllFreelancers() {
   try {
     const snap = await getDocs(query(collection(db, 'users'), where('role', '==', 'freelancer')))
-    return snap.docs.map(d => ({ id: d.id, ...d.data() }))
+    return snap.docs.map(d => ({ ...d.data(), id: d.id }))
   } catch { return [] }
 }
 
@@ -161,6 +161,9 @@ export function AppProvider({ children }) {
   // ── Track active real-time unsubs ─────────────────────────────────────
   const unsubThreads = useRef(null)
   const unsubNotifs  = useRef(null)
+  const unsubJobs    = useRef(null)
+  const unsubContracts = useRef(null)
+  const unsubProposals = useRef(null)
 
   // ── onAuthStateChanged — runs once on mount ───────────────────────────
   useEffect(() => {
@@ -185,6 +188,9 @@ export function AppProvider({ children }) {
         setDisputes([])
         if (unsubThreads.current) { unsubThreads.current(); unsubThreads.current = null }
         if (unsubNotifs.current)  { unsubNotifs.current();  unsubNotifs.current  = null }
+        if (unsubJobs.current)    { unsubJobs.current();    unsubJobs.current    = null }
+        if (unsubContracts.current) { unsubContracts.current(); unsubContracts.current = null }
+        if (unsubProposals.current) { unsubProposals.current(); unsubProposals.current = null }
         return
       }
 
@@ -252,49 +258,76 @@ export function AppProvider({ children }) {
         if (walletSnap.exists()) setWallet(walletSnap.data())
       } catch (e) { console.warn('Error loading wallet:', e) }
 
-      // ── Load jobs ──
+      // ── Load jobs real-time ──
       try {
-        const jobsSnap = await getDocs(collection(db, 'jobs'))
-        const fsJobs = jobsSnap.docs.map(d => ({ id: d.id, ...d.data() }))
-        if (fsJobs.length > 0) setJobs(fsJobs); else setJobs(SEED_JOBS)
-      } catch { setJobs(SEED_JOBS) }
-
-      // ── Load contracts for this user ──
-      try {
-        const [asClient, asFreelancer] = await Promise.all([
-          getDocs(query(collection(db, 'contracts'), where('clientId',     '==', fbUser.uid))),
-          getDocs(query(collection(db, 'contracts'), where('freelancerId', '==', fbUser.uid))),
-        ])
-        const all = [
-          ...asClient.docs.map(d => ({ id: d.id, ...d.data() })),
-          ...asFreelancer.docs.map(d => ({ id: d.id, ...d.data() })),
-        ]
-        const unique = all.filter((c, i, arr) => arr.findIndex(x => x.id === c.id) === i)
-        if (unique.length > 0) setContracts(unique); else setContracts(SEED_CONTRACTS)
-      } catch { setContracts(SEED_CONTRACTS) }
-
-      // ── Load proposals ──
-      try {
-        const propsSnap = await getDocs(collection(db, 'proposals'))
-        const fsProps = propsSnap.docs.map(d => ({ id: d.id, ...d.data() }))
-        const propsMap = {}
-        fsProps.forEach(p => {
-          if (!propsMap[p.jobId]) propsMap[p.jobId] = []
-          propsMap[p.jobId].push(p)
+        if (unsubJobs.current) unsubJobs.current()
+        unsubJobs.current = onSnapshot(collection(db, 'jobs'), snap => {
+          const fsJobs = snap.docs.map(d => ({ ...d.data(), id: d.id }))
+          if (fsJobs.length > 0) {
+            setJobs(fsJobs)
+          } else {
+            setJobs(SEED_JOBS)
+          }
         })
-        setProposals(propsMap)
-      } catch { setProposals({}) }
+      } catch (e) { 
+        console.warn('Error loading jobs:', e)
+        setJobs(SEED_JOBS)
+      }
+
+      // ── Load proposals real-time ──
+      try {
+        if (unsubProposals.current) unsubProposals.current()
+        const proposalsQ = query(
+          collection(db, 'proposals'),
+          or(
+            where('clientId', '==', fbUser.uid),
+            where('freelancerId', '==', fbUser.uid)
+          )
+        )
+        unsubProposals.current = onSnapshot(proposalsQ, snap => {
+          const fsProps = snap.docs.map(d => ({ ...d.data(), id: d.id }))
+          const propsMap = {}
+          fsProps.forEach(p => {
+            if (!propsMap[p.jobId]) propsMap[p.jobId] = []
+            propsMap[p.jobId].push(p)
+          })
+          setProposals(propsMap)
+        })
+      } catch (e) {
+        console.warn('Error loading proposals:', e)
+        setProposals({})
+      }
+
+      // ── Load contracts real-time ──
+      try {
+        if (unsubContracts.current) unsubContracts.current()
+        const contractsQ = query(
+          collection(db, 'contracts'),
+          or(
+            where('clientId', '==', fbUser.uid),
+            where('freelancerId', '==', fbUser.uid)
+          )
+        )
+        unsubContracts.current = onSnapshot(contractsQ, snap => {
+          const fsContracts = snap.docs.map(d => ({ ...d.data(), id: d.id }))
+          if (fsContracts.length > 0) setContracts(fsContracts)
+          else setContracts(SEED_CONTRACTS)
+        })
+      } catch (e) {
+        console.warn('Error loading contracts:', e)
+        setContracts(SEED_CONTRACTS)
+      }
 
       // ── Load & real-time listen to notifications ──
       try {
         if (unsubNotifs.current) unsubNotifs.current()
         const notifsQ = query(
           collection(db, 'notifications'),
-          where('userId', '==', fbUser.uid),
-          orderBy('ts', 'desc')
+          where('userId', '==', fbUser.uid)
         )
         unsubNotifs.current = onSnapshot(notifsQ, snap => {
-          const fsNotifs = snap.docs.map(d => ({ id: d.id, ...d.data() }))
+          const fsNotifs = snap.docs.map(d => ({ ...d.data(), id: d.id }))
+          fsNotifs.sort((a, b) => (b.ts || 0) - (a.ts || 0))
           if (fsNotifs.length > 0) setNotifications(fsNotifs)
           else setNotifications(SEED_NOTIFICATIONS)
         })
@@ -318,6 +351,8 @@ export function AppProvider({ children }) {
       unsub()
       if (unsubThreads.current) unsubThreads.current()
       if (unsubNotifs.current)  unsubNotifs.current()
+      if (unsubJobs.current)    unsubJobs.current()
+      if (unsubContracts.current) unsubContracts.current()
     }
   }, [])
 
@@ -442,7 +477,7 @@ export function AppProvider({ children }) {
     const job = { id:`j${uid()}`, ...jobData, posted:'Just now', proposals:0, clientId: user.id, status:'open' }
     setJobs(p => [job, ...p])
     if (firebaseUser) {
-      addDoc(collection(db, 'jobs'), { ...job, clientId: firebaseUser.uid, createdAt: serverTimestamp() }).catch(() => {})
+      setDoc(doc(db, 'jobs', job.id), { ...job, clientId: firebaseUser.uid, createdAt: serverTimestamp() }).catch(() => {})
     }
     addNotif(`"${job.title}" is live — students can now apply.`, `/job/${job.id}`)
     toast(`"${job.title}" posted!`)
@@ -457,41 +492,31 @@ export function AppProvider({ children }) {
   function submitProposal(jobId, data) {
     const newId = `p${uid()}`
     const p = { id:newId, jobId, ...data, freelancer:user, status:'pending', submittedAt:new Date().toISOString() }
-    setProposals(prev => ({ ...prev, [jobId]: [...(prev[jobId]||[]), p] }))
+    const updatedProps = [...(proposals[jobId]||[]), p]
+    setProposals(prev => ({ ...prev, [jobId]: updatedProps }))
     setJobs(prev => prev.map(j => j.id === jobId ? { ...j, proposals: (j.proposals || 0) + 1 } : j))
     
     if (firebaseUser) {
-      addDoc(collection(db, 'proposals'), { ...p, createdAt: serverTimestamp() })
-        .then(docRef => {
-          // Update id to the firestore id
-          setProposals(prev => ({
-            ...prev,
-            [jobId]: prev[jobId].map(prop => prop.id === newId ? { ...prop, id: docRef.id } : prop)
-          }))
-        })
-        .catch(() => {})
-      // Update job proposals count
       const job = jobs.find(j => j.id === jobId)
-      if (job) {
-        updateDoc(doc(db, 'jobs', jobId), { proposals: (job.proposals || 0) + 1 }).catch(() => {})
-      }
+      const proposalPayload = { ...p, clientId: job?.clientId || '', freelancerId: user.id }
+      setDoc(doc(db, 'proposals', p.id), proposalPayload).catch(() => {})
     }
     
     toast('Proposal submitted!')
   }
 
   function acceptProposal(jobId, proposalId, amount, freelancer) {
-    setProposals(prev => ({
-      ...prev,
-      [jobId]: prev[jobId].map(p => p.id === proposalId ? { ...p, status:'accepted' } : p),
-    }))
+    const updatedProps = (proposals[jobId] || []).map(p => p.id === proposalId ? { ...p, status:'accepted' } : p)
+    setProposals(prev => ({ ...prev, [jobId]: updatedProps }))
     const job = jobs.find(j => j.id === jobId)
     fundEscrow(jobId, amount, job?.title || 'Project')
     updateJobStatus(jobId, 'in_progress')
 
     if (firebaseUser) {
+      if (job) {
+        updateDoc(doc(db, 'jobs', jobId), { status: 'in_progress' }).catch(() => {})
+      }
       updateDoc(doc(db, 'proposals', proposalId), { status: 'accepted' }).catch(() => {})
-      updateDoc(doc(db, 'jobs', jobId), { status: 'in_progress' }).catch(() => {})
     }
 
     const contract = {
@@ -517,7 +542,7 @@ export function AppProvider({ children }) {
     }
     setContracts(p => [contract, ...p])
     if (firebaseUser) {
-      addDoc(collection(db, 'contracts'), { ...contract, createdAt: serverTimestamp() }).catch(() => {})
+      setDoc(doc(db, 'contracts', contract.id), { ...contract, createdAt: serverTimestamp() }).catch(() => {})
     }
     addNotif(`Contract started with ${freelancer.name} for "${job?.title}"`, '/contracts')
     toast(`Contract started with ${freelancer.name}`)

@@ -29,7 +29,7 @@ function WeeklyBarChart({ data }) {
             <rect
               x={x} y={y} width={barW} height={barH}
               rx="6" ry="6"
-              fill={isMax ? '#1a1a1a' : '#e5e7eb'}
+              fill={isMax ? 'var(--nexus-ink)' : 'var(--nexus-border)'}
               className={styles.barRect}
             />
             {/* Value label on top */}
@@ -38,7 +38,7 @@ function WeeklyBarChart({ data }) {
               textAnchor="middle"
               fontSize="11"
               fontWeight={isMax ? '700' : '500'}
-              fill={isMax ? '#1a1a1a' : '#6b7280'}
+              fill={isMax ? 'var(--nexus-ink)' : 'var(--nexus-mid)'}
             >
               {d.value > 0 ? `₦${d.value.toLocaleString()}` : '—'}
             </text>
@@ -47,7 +47,7 @@ function WeeklyBarChart({ data }) {
               x={x + barW / 2} y={chartH + 18}
               textAnchor="middle"
               fontSize="11"
-              fill="#9ca3af"
+              fill="var(--nexus-muted)"
             >
               {d.label}
             </text>
@@ -179,10 +179,10 @@ function AnalyticsTab({ contracts, proposals, user, transactions }) {
         <div className={styles.proposalStats}>
           <div className={styles.proposalRatioCircle}>
             <svg viewBox="0 0 80 80" className={styles.donutSvg}>
-              <circle cx="40" cy="40" r="32" fill="none" stroke="#f3f4f6" strokeWidth="8"/>
+              <circle cx="40" cy="40" r="32" fill="none" stroke="var(--nexus-border)" strokeWidth="8"/>
               <circle
                 cx="40" cy="40" r="32" fill="none"
-                stroke="#1a1a1a" strokeWidth="8"
+                stroke="var(--nexus-accent)" strokeWidth="8"
                 strokeDasharray={`${(acceptRate / 100) * 201} 201`}
                 strokeLinecap="round"
                 transform="rotate(-90 40 40)"
@@ -195,21 +195,21 @@ function AnalyticsTab({ contracts, proposals, user, transactions }) {
           </div>
           <div className={styles.proposalBreakdown}>
             <div className={styles.propStatRow}>
-              <div className={styles.propStatDot} style={{background:'#1a1a1a'}}/>
+              <div className={styles.propStatDot} style={{background:'var(--nexus-accent)'}}/>
               <div>
                 <p className={styles.propStatNum}>{sent}</p>
                 <p className={styles.propStatLabel}>Sent</p>
               </div>
             </div>
             <div className={styles.propStatRow}>
-              <div className={styles.propStatDot} style={{background:'#22c55e'}}/>
+              <div className={styles.propStatDot} style={{background:'var(--nexus-success)'}}/>
               <div>
                 <p className={styles.propStatNum}>{accepted}</p>
                 <p className={styles.propStatLabel}>Accepted</p>
               </div>
             </div>
             <div className={styles.propStatRow}>
-              <div className={styles.propStatDot} style={{background:'#e5e7eb'}}/>
+              <div className={styles.propStatDot} style={{background:'var(--nexus-border)'}}/>
               <div>
                 <p className={styles.propStatNum}>{sent - accepted}</p>
                 <p className={styles.propStatLabel}>Pending</p>

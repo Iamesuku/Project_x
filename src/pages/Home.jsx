@@ -14,35 +14,35 @@ function avatarHue(name = '') {
 
 /* ── Static data ────────────────────────────────────────────────────── */
 const CATEGORIES = [
-  { icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M17 14v6M14 17h6"/></svg>, label: 'AI Services', count: '3,200+', hue: 245 },
-  { icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>, label: 'Development & IT', count: '18,400+', hue: 200 },
-  { icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>, label: 'Design & Creative', count: '11,000+', hue: 285 },
-  { icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>, label: 'Sales & Marketing', count: '7,800+', hue: 15 },
-  { icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>, label: 'Writing & Translation', count: '9,500+', hue: 155 },
-  { icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>, label: 'Admin & Support', count: '5,200+', hue: 45 },
-  { icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>, label: 'Finance & Accounting', count: '4,700+', hue: 142 },
-  { icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>, label: 'Engineering & Arch', count: '3,900+', hue: 220 },
-  { icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>, label: 'Legal', count: '2,100+', hue: 0 },
-  { icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>, label: 'HR & Training', count: '2,800+', hue: 30 },
+  { icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><rect x="3" y="3" width="7" height="7" rx="1" /><rect x="14" y="3" width="7" height="7" rx="1" /><rect x="3" y="14" width="7" height="7" rx="1" /><path d="M17 14v6M14 17h6" /></svg>, label: 'AI Services', count: '3,200+', hue: 245 },
+  { icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><polyline points="16 18 22 12 16 6" /><polyline points="8 6 2 12 8 18" /></svg>, label: 'Development & IT', count: '18,400+', hue: 200 },
+  { icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><circle cx="12" cy="12" r="4" /><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41" /></svg>, label: 'Design & Creative', count: '11,000+', hue: 285 },
+  { icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M22 12h-4l-3 9L9 3l-3 9H2" /></svg>, label: 'Sales & Marketing', count: '7,800+', hue: 15 },
+  { icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M12 20h9" /><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" /></svg>, label: 'Writing & Translation', count: '9,500+', hue: 155 },
+  { icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><rect x="2" y="7" width="20" height="14" rx="2" /><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2" /></svg>, label: 'Admin & Support', count: '5,200+', hue: 45 },
+  { icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><line x1="12" y1="1" x2="12" y2="23" /><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" /></svg>, label: 'Finance & Accounting', count: '4,700+', hue: 142 },
+  { icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" /></svg>, label: 'Engineering & Arch', count: '3,900+', hue: 220 },
+  { icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /></svg>, label: 'Legal', count: '2,100+', hue: 0 },
+  { icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M23 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /></svg>, label: 'HR & Training', count: '2,800+', hue: 30 },
 ]
 
 const LOGOS = ['Microsoft', 'Notion', 'Stripe', 'Airbnb', 'Figma', 'Linear', 'Vercel', 'Shopify']
 
 const TRUST_COLS = [
   {
-    icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>,
+    icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /><polyline points="9 12 11 14 15 10" /></svg>,
     title: 'Zero platform fees',
     body: 'NEXUS charges no commission. Every credit you earn goes directly to your wallet.',
   },
   {
-    icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><rect x="2" y="7" width="20" height="14" rx="2"/><circle cx="17" cy="14" r="1.5" fill="currentColor" stroke="none"/><path d="M6 7V5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v2"/></svg>,
+    icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><rect x="2" y="7" width="20" height="14" rx="2" /><circle cx="17" cy="14" r="1.5" fill="currentColor" stroke="none" /><path d="M6 7V5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v2" /></svg>,
     title: 'Escrow-protected payments',
     body: 'Funds are locked until both parties are satisfied. No chasing payments or bad actors.',
   },
   {
-    icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.36 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21 17l.92-.08z"/></svg>,
-    title: 'Verified students only',
-    body: 'Sign-up requires a university email. Every account is tied to a real campus identity.',
+    icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.36 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21 17l.92-.08z" /></svg>,
+    title: 'Verified students ',
+    body: 'Sign-up requires  email. Every account is tied to a real identity.',
   },
 ]
 
@@ -74,7 +74,7 @@ function HeroCardComposition() {
       {/* Secondary card — job notification */}
       <div className={styles.heroCard2}>
         <div className={styles.hcNotifIcon}>
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-4 0v2"/></svg>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="2" y="7" width="20" height="14" rx="2" /><path d="M16 7V5a2 2 0 0 0-4 0v2" /></svg>
         </div>
         <div>
           <p className={styles.hcNotifTitle}>New Proposal</p>
@@ -85,15 +85,15 @@ function HeroCardComposition() {
 
       {/* Floating payment badge */}
       <div className={styles.heroBadgePill}>
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="20 6 9 17 4 12"/></svg>
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="20 6 9 17 4 12" /></svg>
         Payment secured — ₦240,000
       </div>
 
       {/* Geometric floating objects */}
-      <FloatingObject shape="ring"    size={56}  x="80%"  y="10%"  duration={7}   phase={0}    opacity={0.18} colour="var(--nexus-accent)" />
-      <FloatingObject shape="diamond" size={20}  x="5%"   y="25%"  duration={5}   phase={0.3}  opacity={0.15} colour="var(--nexus-accent)" />
-      <FloatingObject shape="circle"  size={12}  x="90%"  y="65%"  duration={4.5} phase={0.6}  opacity={0.12} colour="var(--nexus-success)" filled />
-      <FloatingObject shape="hexagon" size={32}  x="70%"  y="85%"  duration={8}   phase={0.5}  opacity={0.1}  colour="var(--nexus-warn)" />
+      <FloatingObject shape="ring" size={56} x="80%" y="10%" duration={7} phase={0} opacity={0.18} colour="var(--nexus-accent)" />
+      <FloatingObject shape="diamond" size={20} x="5%" y="25%" duration={5} phase={0.3} opacity={0.15} colour="var(--nexus-accent)" />
+      <FloatingObject shape="circle" size={12} x="90%" y="65%" duration={4.5} phase={0.6} opacity={0.12} colour="var(--nexus-success)" filled />
+      <FloatingObject shape="hexagon" size={32} x="70%" y="85%" duration={8} phase={0.5} opacity={0.1} colour="var(--nexus-warn)" />
     </div>
   )
 }
@@ -173,15 +173,15 @@ const WORK_STEPS = [
 
 /* ── Main Home component ────────────────────────────────────────────── */
 export default function Home() {
-  const [mode, setMode]   = useState('hire')
+  const [mode, setMode] = useState('hire')
   const [query, setQuery] = useState('')
   const [howTab, setHowTab] = useState('hire')
   const navigate = useNavigate()
 
-  const [catRef,  catVis]  = useScrollReveal()
-  const [howRef,  howVis]  = useScrollReveal()
+  const [catRef, catVis] = useScrollReveal()
+  const [howRef, howVis] = useScrollReveal()
   const [trustRef, trustVis] = useScrollReveal()
-  const [ctaRef,  ctaVis]  = useScrollReveal()
+  const [ctaRef, ctaVis] = useScrollReveal()
 
   const steps = howTab === 'hire' ? HIRE_STEPS : WORK_STEPS
 
@@ -208,10 +208,7 @@ export default function Home() {
         <div className={`container ${styles.heroInner}`}>
           {/* Left column — text */}
           <div className={styles.heroLeft}>
-            <div className={styles.heroBadge}>
-              <span className={styles.dot} />
-              Trusted by 50,000+ students across Nigeria
-            </div>
+
 
             <h1 id="hero-heading" className={styles.headline}>
               Where talent<br />meets <em>opportunity.</em>
@@ -239,7 +236,7 @@ export default function Home() {
             <form className={styles.searchWrap} onSubmit={handleSearch}>
               <div className={styles.searchBox}>
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-                  <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                  <circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" />
                 </svg>
                 <input
                   className={styles.searchInput}
@@ -272,17 +269,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ── Trust marquee ─────────────────────────────────────────── */}
-      <section className={styles.marqueeSection} aria-label="Trusted by">
-        <p className={styles.marqueeLabel}>Trusted by teams at</p>
-        <div className={styles.marqueeWrap}>
-          <div className={styles.marqueeTrack}>
-            {[...LOGOS, ...LOGOS].map((n, i) => (
-              <span key={i} className={styles.marqueeItem}>{n}</span>
-            ))}
-          </div>
-        </div>
-      </section>
 
       {/* ── Categories ──────────────────────────────────────────── */}
       <section className={styles.catsSection} id="categories" ref={catRef} aria-labelledby="cats-heading">
@@ -353,7 +339,7 @@ export default function Home() {
                 key={c.title}
                 className={`${styles.trustCol} ${i < 2 ? styles.trustDivider : ''}`}
                 style={{
-                  opacity:   trustVis ? 1 : 0,
+                  opacity: trustVis ? 1 : 0,
                   transform: trustVis ? 'translateY(0)' : 'translateY(20px)',
                   transition: `opacity 0.5s ease ${i * 0.1}s, transform 0.5s var(--ease-out) ${i * 0.1}s`,
                 }}
@@ -375,7 +361,7 @@ export default function Home() {
           <div
             className={styles.ctaCard}
             style={{
-              opacity:   ctaVis ? 1 : 0,
+              opacity: ctaVis ? 1 : 0,
               transform: ctaVis ? 'translateY(0)' : 'translateY(32px)',
               transition: 'opacity 0.7s ease, transform 0.7s var(--ease-out)',
             }}
@@ -384,10 +370,10 @@ export default function Home() {
             <p className={styles.ctaWatermark} aria-hidden="true">NEXUS</p>
 
             {/* Orbiting shapes */}
-            <FloatingObject shape="ring"    size={64}  x="75%"  y="15%"  duration={20} phase={0}   opacity={0.08} colour="rgba(255,255,255,0.6)" rotate />
-            <FloatingObject shape="diamond" size={28}  x="85%"  y="70%"  duration={28} phase={0.4} opacity={0.07} colour="rgba(255,255,255,0.5)" rotate />
-            <FloatingObject shape="circle"  size={20}  x="60%"  y="80%"  duration={35} phase={0.7} opacity={0.06} colour="rgba(255,255,255,0.4)" />
-            <FloatingObject shape="hexagon" size={44}  x="92%"  y="40%"  duration={25} phase={0.2} opacity={0.05} colour="rgba(255,255,255,0.4)" />
+            <FloatingObject shape="ring" size={64} x="75%" y="15%" duration={20} phase={0} opacity={0.08} colour="rgba(255,255,255,0.6)" rotate />
+            <FloatingObject shape="diamond" size={28} x="85%" y="70%" duration={28} phase={0.4} opacity={0.07} colour="rgba(255,255,255,0.5)" rotate />
+            <FloatingObject shape="circle" size={20} x="60%" y="80%" duration={35} phase={0.7} opacity={0.06} colour="rgba(255,255,255,0.4)" />
+            <FloatingObject shape="hexagon" size={44} x="92%" y="40%" duration={25} phase={0.2} opacity={0.05} colour="rgba(255,255,255,0.4)" />
 
             <div className={styles.ctaContent}>
               <p className={styles.eyebrow} style={{ color: 'rgba(255,255,255,0.35)' }}>Ready to start?</p>
@@ -399,7 +385,7 @@ export default function Home() {
               </p>
               <div className={styles.ctaActions}>
                 <Link to="/browse" className={styles.ctaPrimary}>Start hiring →</Link>
-                <Link to="/jobs"   className={styles.ctaGhost}>Find work →</Link>
+                <Link to="/jobs" className={styles.ctaGhost}>Find work →</Link>
               </div>
             </div>
           </div>
