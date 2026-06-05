@@ -125,12 +125,12 @@ export default function JobDetail() {
                 <Link to="/auth" className={styles.applyBtn}>Sign up & apply →</Link>
               </div>
             ) : isClient ? (
-              // Clients see a reminder that they post, not apply
+              // Clients cannot apply for jobs
               <div className={styles.clientBox}>
-                <p className={styles.clientTitle}>You're browsing as a client</p>
+                <p className={styles.clientTitle}>You're registered as a client</p>
                 <p className={styles.clientSub}>
-                  Switch to freelancer mode in your{' '}
-                  <Link to="/profile">profile settings</Link> to apply for jobs.
+                  Clients post jobs and hire talent. To work as a freelancer,
+                  please create a separate freelancer account.
                 </p>
               </div>
             ) : !showForm ? (

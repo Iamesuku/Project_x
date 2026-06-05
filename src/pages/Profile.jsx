@@ -10,7 +10,7 @@ const SKILLS_OPTS = ['React','Node.js','Python','Figma','UI/UX Design','Branding
   'Flutter','Swift','Legal','Compliance','HR','Project Management','Excel','SQL','Tableau']
 
 export default function Profile() {
-  const { user, updateUser, switchRole, logout, wallet } = useApp()
+  const { user, updateUser, logout, wallet } = useApp()
   const navigate = useNavigate()
   const [form, setForm] = useState({
     name:       user.name,
@@ -74,9 +74,6 @@ export default function Profile() {
               ))}
             </nav>
 
-            <button className={styles.switchRoleBtn} onClick={switchRole}>
-              Switch to {user.role === 'client' ? 'freelancer' : 'client'} mode
-            </button>
           </div>
 
           {/* ── Main panel ── */}

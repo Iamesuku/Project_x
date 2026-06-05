@@ -88,9 +88,6 @@ export default function OnboardingModal({ userName, onComplete }) {
             : `Continue as ${selected === 'client' ? 'Service Seeker' : 'Service Provider'} →`}
         </button>
 
-        <p className={styles.note}>
-          You can switch roles anytime from your profile settings.
-        </p>
       </div>
     </div>
   )

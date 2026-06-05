@@ -420,11 +420,6 @@ export function AppProvider({ children }) {
     toast('Profile updated')
   }
 
-  function switchRole() {
-    const newRole = user.role === 'client' ? 'freelancer' : 'client'
-    updateUser({ role: newRole })
-    toast(`Switched to ${newRole} mode`)
-  }
 
   // ── Wallet ─────────────────────────────────────────────────────────────
   function persistWallet(updated) {
@@ -666,7 +661,7 @@ export function AppProvider({ children }) {
       // loading gate
       isLoading,
       // auth
-      isLoggedIn, user, setUser: setUserState, login, signup, logout, updateUser, switchRole,
+      isLoggedIn, user, setUser: setUserState, login, signup, logout, updateUser,
       authLoading: isLoading,
       firebaseUser,
       // wallet
