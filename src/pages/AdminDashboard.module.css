@@ -145,6 +145,23 @@
 .adminName { font-size: 13px; font-weight: 600; color: var(--white); }
 .adminRole { font-size: 11px; color: rgba(255,255,255,0.4); margin-top: 1px; }
 
+.seedBtn {
+  display: block;
+  width: 100%;
+  padding: 10px 14px;
+  border-radius: var(--radius-md);
+  font-size: 12px;
+  font-weight: 600;
+  color: #a5b4fc;
+  background: rgba(99,102,241,0.12);
+  border: 1px solid rgba(99,102,241,0.25);
+  cursor: pointer;
+  transition: all 0.18s;
+  text-align: center;
+}
+.seedBtn:hover:not(:disabled) { background: rgba(99,102,241,0.22); border-color: #6366f1; }
+.seedBtn:disabled { opacity: 0.55; cursor: default; }
+
 /* ── Main ────────────────────────────────────────────────────────────────── */
 .main {
   flex: 1;

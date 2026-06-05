@@ -17,7 +17,7 @@ export default function JobDetail() {
 
   // Role guard: clients post jobs, they don't apply to them
   const isClient     = user?.role === 'client'
-  const canApply     = isLoggedIn && !isClient
+  const canApply     = isLoggedIn && !isClient && !job?.isDemo
   const currency     = wallet?.currency || 'NGN'
 
   if (!job) return (
@@ -30,7 +30,7 @@ export default function JobDetail() {
   const jobProposals = proposals[id] || []
   const alreadyApplied = jobProposals.some(p => p.freelancer?.id === user.id)
   const isSaved = savedJobs.includes(job.id)
-  const totalProposals = job.proposals + jobProposals.length
+  const totalProposals = jobProposals.length > 0 ? jobProposals.length : (job.proposals || 0)
 
   function validate() {
     const e = {}
@@ -131,6 +131,16 @@ export default function JobDetail() {
                 <p className={styles.clientSub}>
                   Clients post jobs and hire talent. To work as a freelancer,
                   please create a separate freelancer account.
+                </p>
+              </div>
+            ) : job?.isDemo ? (
+              // Demo listing — proposals are blocked
+              <div className={styles.clientBox}>
+                <p className={styles.clientTitle}>📋 This is a demonstration listing</p>
+                <p className={styles.clientSub}>
+                  Demo jobs showcase what NEXUS looks like with real content.
+                  They cannot accept proposals — <Link to="/jobs">browse live jobs</Link> or{' '}
+                  <Link to="/post-job">post your own</Link> to start working.
                 </p>
               </div>
             ) : !showForm ? (

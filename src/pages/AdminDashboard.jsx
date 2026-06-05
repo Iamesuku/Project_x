@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react'
 import { useApp } from '../context/AppContext'
+import { seedDemoData } from '../utils/seedFirestore'
 import styles from './AdminDashboard.module.css'
 
 // ── Static mock data for demo purposes ───────────────────────────────────────
@@ -62,6 +63,21 @@ export default function AdminDashboard() {
   const [reports, setReports]             = useState(MOCK_REPORTED_JOBS)
   const [reportFilter, setReportFilter]   = useState('all')  // all | open | reviewed | removed
   const [expandedReport, setExpandedReport] = useState(null)
+
+  // ── Seed state ────────────────────────────────────────────────────────
+  const [seedStatus, setSeedStatus] = useState(null) // null | 'running' | 'done' | 'already' | 'error'
+  const [seedProgress, setSeedProgress] = useState({ done: 0, total: 0 })
+
+  async function handleSeed() {
+    setSeedStatus('running')
+    try {
+      const result = await seedDemoData((done, total) => setSeedProgress({ done, total }))
+      setSeedStatus(result.alreadySeeded ? 'already' : 'done')
+    } catch (e) {
+      console.error('Seed failed:', e)
+      setSeedStatus('error')
+    }
+  }
 
   // ── KPI data ──────────────────────────────────────────────────────────
   const totalUsers        = users.length
@@ -161,6 +177,20 @@ export default function AdminDashboard() {
               <p className={styles.adminRole}>Super Administrator</p>
             </div>
           </div>
+          {/* ── Seed button ── */}
+          <button
+            className={styles.seedBtn}
+            onClick={handleSeed}
+            disabled={seedStatus === 'running'}
+            style={{ marginTop: 12 }}
+          >
+            {seedStatus === 'running'
+              ? `Seeding… ${seedProgress.done}/${seedProgress.total}`
+              : seedStatus === 'done'    ? '✓ Demo data seeded'
+              : seedStatus === 'already' ? '✓ Already seeded'
+              : seedStatus === 'error'   ? '✗ Seed failed — retry'
+              : '⚡ Seed Demo Data'}
+          </button>
         </div>
       </aside>
 

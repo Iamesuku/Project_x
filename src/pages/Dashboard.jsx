@@ -598,7 +598,9 @@ export default function Dashboard() {
                 <p className={styles.analyticsEyebrow}>Freelancer insights</p>
                 <h2 className={styles.analyticsTitle}>Your Performance</h2>
               </div>
-              <span className={styles.analyticsPeriodBadge}>April 2026</span>
+              <span className={styles.analyticsPeriodBadge}>
+                {new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
+              </span>
             </div>
             <AnalyticsTab
               contracts={contracts}

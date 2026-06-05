@@ -64,6 +64,14 @@ function PublicRoute({ children }) {
   return isLoggedIn ? <Navigate to="/dashboard" replace /> : children
 }
 
+function AdminRoute({ children }) {
+  const { isLoggedIn, isLoading, user } = useApp()
+  if (isLoading) return null
+  if (!isLoggedIn) return <Navigate to="/auth" replace />
+  if (!user.isAdmin && user.role !== 'admin') return <Navigate to="/dashboard" replace />
+  return children
+}
+
 // ── Loading screen (shown while Firebase restores auth) ───────────────────
 function LoadingScreen() {
   return (
@@ -189,8 +197,10 @@ function AppRoutes() {
           <PrivateRoute><WithLayout><Notifications /></WithLayout></PrivateRoute>
         } />
 
-        {/* Admin — protected by being hidden from nav, not by auth guard */}
-        <Route path="/admin" element={<><Navbar /><AdminDashboard /></>} />
+        {/* Admin — protected by isAdmin flag on user document */}
+        <Route path="/admin" element={
+          <AdminRoute><><Navbar /><AdminDashboard /></></AdminRoute>
+        } />
 
         {/* 404 catch-all */}
         <Route path="*" element={<WithLayout><NotFound /></WithLayout>} />
