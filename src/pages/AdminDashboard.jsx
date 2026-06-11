@@ -1,20 +1,21 @@
 import { useState, useMemo } from 'react'
 import { useApp } from '../context/AppContext'
 import { seedDemoData } from '../utils/seedFirestore'
+import { setupDemoUsers, DEMO_CREDENTIALS } from '../utils/setupDemoUsers'
 import styles from './AdminDashboard.module.css'
 
 // ── Static mock data for demo purposes ───────────────────────────────────────
 const MOCK_USERS = [
-  { id: 'u1', name: 'Alex Johnson',    avatar: 'AJ', email: 'alex@unilag.edu.ng',     role: 'client',     status: 'active',    joined: '2026-02-01', trustScore: 92, jobs: 7  },
-  { id: 'u2', name: 'Amara Osei',      avatar: 'AO', email: 'amara@unilag.edu.ng',    role: 'freelancer', status: 'active',    joined: '2026-01-15', trustScore: 98, jobs: 84 },
-  { id: 'u3', name: 'Javier Ruiz',     avatar: 'JR', email: 'javier@unilag.edu.ng',   role: 'freelancer', status: 'active',    joined: '2026-01-20', trustScore: 95, jobs: 142},
-  { id: 'u4', name: 'Kwame Asante',    avatar: 'KA', email: 'kwame@unilag.edu.ng',    role: 'freelancer', status: 'suspended', joined: '2025-12-10', trustScore: 42, jobs: 3  },
-  { id: 'u5', name: 'Priya Nair',      avatar: 'PN', email: 'priya@unilag.edu.ng',    role: 'freelancer', status: 'active',    joined: '2026-02-05', trustScore: 100,jobs: 53 },
-  { id: 'u6', name: 'Ethan Mwangi',    avatar: 'EM', email: 'ethan@unilag.edu.ng',    role: 'freelancer', status: 'active',    joined: '2025-11-01', trustScore: 88, jobs: 161},
-  { id: 'u7', name: 'Chen Wei',        avatar: 'CW', email: 'chen@unilag.edu.ng',     role: 'freelancer', status: 'banned',    joined: '2025-10-12', trustScore: 8,  jobs: 0  },
-  { id: 'u8', name: 'Fatima Al-Hassan',avatar: 'FA', email: 'fatima@unilag.edu.ng',   role: 'freelancer', status: 'active',    joined: '2026-01-05', trustScore: 100,jobs: 31 },
-  { id: 'u9', name: 'Chidi Okonkwo',   avatar: 'CO', email: 'chidi@unilag.edu.ng',    role: 'freelancer', status: 'active',    joined: '2026-02-11', trustScore: 85, jobs: 28 },
-  { id:'u10', name: 'Seun Adeyemi',    avatar: 'SA', email: 'seun@unilag.edu.ng',     role: 'client',     status: 'suspended', joined: '2025-12-20', trustScore: 33, jobs: 2  },
+  { id: 'u1', name: 'Alex Johnson',    avatar: 'AJ', email: 'alex@uninexus.edu',     role: 'client',     status: 'active',    joined: '2026-02-01', trustScore: 92, jobs: 7  },
+  { id: 'u2', name: 'Amara Osei',      avatar: 'AO', email: 'amara@uninexus.edu',    role: 'freelancer', status: 'active',    joined: '2026-01-15', trustScore: 98, jobs: 84 },
+  { id: 'u3', name: 'Javier Ruiz',     avatar: 'JR', email: 'javier@uninexus.edu',   role: 'freelancer', status: 'active',    joined: '2026-01-20', trustScore: 95, jobs: 142},
+  { id: 'u4', name: 'Kwame Asante',    avatar: 'KA', email: 'kwame@uninexus.edu',    role: 'freelancer', status: 'suspended', joined: '2025-12-10', trustScore: 42, jobs: 3  },
+  { id: 'u5', name: 'Priya Nair',      avatar: 'PN', email: 'priya@uninexus.edu',    role: 'freelancer', status: 'active',    joined: '2026-02-05', trustScore: 100,jobs: 53 },
+  { id: 'u6', name: 'Ethan Mwangi',    avatar: 'EM', email: 'ethan@uninexus.edu',    role: 'freelancer', status: 'active',    joined: '2025-11-01', trustScore: 88, jobs: 161},
+  { id: 'u7', name: 'Chen Wei',        avatar: 'CW', email: 'chen@uninexus.edu',     role: 'freelancer', status: 'banned',    joined: '2025-10-12', trustScore: 8,  jobs: 0  },
+  { id: 'u8', name: 'Fatima Al-Hassan',avatar: 'FA', email: 'fatima@uninexus.edu',   role: 'freelancer', status: 'active',    joined: '2026-01-05', trustScore: 100,jobs: 31 },
+  { id: 'u9', name: 'Chidi Okonkwo',   avatar: 'CO', email: 'chidi@uninexus.edu',    role: 'freelancer', status: 'active',    joined: '2026-02-11', trustScore: 85, jobs: 28 },
+  { id:'u10', name: 'Seun Adeyemi',    avatar: 'SA', email: 'seun@uninexus.edu',     role: 'client',     status: 'suspended', joined: '2025-12-20', trustScore: 33, jobs: 2  },
 ]
 
 const MOCK_REPORTED_JOBS = [
@@ -76,6 +77,26 @@ export default function AdminDashboard() {
     } catch (e) {
       console.error('Seed failed:', e)
       setSeedStatus('error')
+    }
+  }
+
+  // ── Demo user setup state ─────────────────────────────────────────────
+  const [demoSetupStatus, setDemoSetupStatus] = useState(null) // null | 'running' | 'done' | 'error'
+  const [demoSetupLog,    setDemoSetupLog]    = useState([])
+  const [showCredentials, setShowCredentials] = useState(false)
+
+  async function handleDemoSetup() {
+    setDemoSetupStatus('running')
+    setDemoSetupLog([])
+    setShowCredentials(false)
+    try {
+      await setupDemoUsers(msg => setDemoSetupLog(prev => [...prev, msg]))
+      setDemoSetupStatus('done')
+      setShowCredentials(true)
+    } catch (e) {
+      console.error('Demo setup failed:', e)
+      setDemoSetupStatus('error')
+      setDemoSetupLog(prev => [...prev, `Error: ${e.message}`])
     }
   }
 
@@ -191,6 +212,47 @@ export default function AdminDashboard() {
               : seedStatus === 'error'   ? '✗ Seed failed — retry'
               : '⚡ Seed Demo Data'}
           </button>
+
+          {/* ── Demo Users button ── */}
+          <button
+            className={styles.seedBtn}
+            onClick={handleDemoSetup}
+            disabled={demoSetupStatus === 'running'}
+            style={{ marginTop: 8, background: demoSetupStatus === 'done' ? 'var(--success, #16a34a)' : demoSetupStatus === 'error' ? 'var(--danger, #dc2626)' : '#1d4ed8' }}
+          >
+            {demoSetupStatus === 'running' ? '⏳ Setting up…'
+              : demoSetupStatus === 'done'  ? '✓ Demo Users Ready'
+              : demoSetupStatus === 'error' ? '✗ Setup Failed — retry'
+              : '👤 Setup Demo Users'}
+          </button>
+
+          {/* ── Credentials box ── */}
+          {showCredentials && (
+            <div style={{
+              marginTop: 10, padding: '10px 12px',
+              background: 'rgba(255,255,255,0.07)', borderRadius: 8,
+              border: '1px solid rgba(255,255,255,0.12)', fontSize: 11,
+              lineHeight: 1.8, color: 'rgba(255,255,255,0.85)',
+            }}>
+              <p style={{ fontWeight: 700, marginBottom: 4, color: '#fff' }}>Demo Credentials</p>
+              <p>🧑‍💼 <strong>Client</strong></p>
+              <p style={{ color: '#86efac' }}>{DEMO_CREDENTIALS.client.email}</p>
+              <p style={{ color: '#fde68a', marginBottom: 6 }}>pw: {DEMO_CREDENTIALS.client.password}</p>
+              <p>💻 <strong>Freelancer</strong></p>
+              <p style={{ color: '#86efac' }}>{DEMO_CREDENTIALS.freelancer.email}</p>
+              <p style={{ color: '#fde68a' }}>pw: {DEMO_CREDENTIALS.freelancer.password}</p>
+            </div>
+          )}
+
+          {/* ── Setup log (collapsible) ── */}
+          {demoSetupLog.length > 0 && (
+            <details style={{ marginTop: 6 }}>
+              <summary style={{ fontSize: 10, color: 'rgba(255,255,255,0.4)', cursor: 'pointer' }}>Show log ({demoSetupLog.length} lines)</summary>
+              <div style={{ fontSize: 9, color: 'rgba(255,255,255,0.35)', maxHeight: 80, overflowY: 'auto', marginTop: 4 }}>
+                {demoSetupLog.map((l, i) => <p key={i}>{l}</p>)}
+              </div>
+            </details>
+          )}
         </div>
       </aside>
 
