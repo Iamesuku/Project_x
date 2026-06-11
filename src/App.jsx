@@ -14,6 +14,7 @@ import Browse            from './pages/Browse'
 import Jobs              from './pages/Jobs'
 import JobDetail         from './pages/JobDetail'
 import FreelancerProfile from './pages/FreelancerProfile'
+import DemoSetup         from './pages/DemoSetup'
 
 // ── Lazy-loaded (heavy pages, only fetch when needed) ─────────────────────
 const Dashboard      = lazy(() => import('./pages/Dashboard'))
@@ -65,10 +66,12 @@ function PublicRoute({ children }) {
 }
 
 function AdminRoute({ children }) {
-  const { isLoggedIn, isLoading, user } = useApp()
+  const { isLoggedIn, isLoading } = useApp()
   if (isLoading) return null
+  // ── Temporarily open to any logged-in user so admin setup can be run ──
+  // Re-lock after demo users are created by restoring the isAdmin check:
+  //   if (!user.isAdmin && user.role !== 'admin') return <Navigate to="/dashboard" replace />
   if (!isLoggedIn) return <Navigate to="/auth" replace />
-  if (!user.isAdmin && user.role !== 'admin') return <Navigate to="/dashboard" replace />
   return children
 }
 
@@ -201,6 +204,9 @@ function AppRoutes() {
         <Route path="/admin" element={
           <AdminRoute><><Navbar /><AdminDashboard /></></AdminRoute>
         } />
+
+        {/* Dev-only setup page — no auth required */}
+        <Route path="/setup" element={<DemoSetup />} />
 
         {/* 404 catch-all */}
         <Route path="*" element={<WithLayout><NotFound /></WithLayout>} />

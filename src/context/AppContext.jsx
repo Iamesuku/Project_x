@@ -265,11 +265,10 @@ export function AppProvider({ children }) {
         if (unsubJobs.current) unsubJobs.current()
         unsubJobs.current = onSnapshot(collection(db, 'jobs'), snap => {
           const fsJobs = snap.docs.map(d => ({ ...d.data(), id: d.id }))
-          if (fsJobs.length > 0) {
-            setJobs(fsJobs)
-          } else {
-            setJobs(SEED_JOBS)
-          }
+          // Always merge Firestore jobs with seed jobs (seed ones act as demo content)
+          const fsIds = new Set(fsJobs.map(j => j.id))
+          const merged = [...fsJobs, ...SEED_JOBS.filter(j => !fsIds.has(j.id))]
+          setJobs(merged)
         })
       } catch (e) { 
         console.warn('Error loading jobs:', e)
@@ -347,8 +346,10 @@ export function AppProvider({ children }) {
       // ── Load freelancers list ──
       try {
         const fsFreelancers = await getAllFreelancers()
-        if (fsFreelancers.length > 0) setFreelancers(fsFreelancers)
-        else setFreelancers(SEED_FREELANCERS)
+        // Always merge Firestore freelancers with seed freelancers
+        const fsIds = new Set(fsFreelancers.map(f => f.id))
+        const merged = [...fsFreelancers, ...SEED_FREELANCERS.filter(f => !fsIds.has(f.id))]
+        setFreelancers(merged)
       } catch { setFreelancers(SEED_FREELANCERS) }
 
       // ── Real-time RTDB thread listener (for contact list) ──
