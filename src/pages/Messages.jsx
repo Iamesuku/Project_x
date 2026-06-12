@@ -8,6 +8,7 @@ import {
   subscribeToThreads,
   markThreadRead,
 } from '../firebase/messageService'
+import Avatar from '../components/Avatar'
 import styles from './Messages.module.css'
 
 // ── Helpers ──────────────────────────────────────────────────────────────
@@ -236,7 +237,7 @@ export default function Messages() {
                     className={styles.newConvoItem}
                     onClick={() => { navigate(`/messages/${f.id}`); setShowNew(false) }}
                   >
-                    <div className={styles.contactAvatar}>{f.avatar}</div>
+                    <Avatar src={f.avatar} name={f.name} size={36} className={styles.contactAvatar} />
                     <div>
                       <p className={styles.contactName}>{f.name}</p>
                       <p className={styles.contactTitle}>{f.title}</p>
@@ -276,7 +277,7 @@ export default function Messages() {
                 to={`/messages/${c.id}`}
                 className={`${styles.contactRow} ${otherId === c.id ? styles.contactActive : ''}`}
               >
-                <div className={styles.contactAvatar}>{c.avatar}</div>
+                <Avatar src={c.avatar} name={c.name} size={40} className={styles.contactAvatar} />
                 <div className={styles.contactInfo}>
                   <div className={styles.contactTop}>
                     <span className={styles.contactName}>{c.name}</span>
@@ -315,7 +316,7 @@ export default function Messages() {
             <>
               {/* Thread header */}
               <div className={styles.threadHead}>
-                <div className={styles.threadAvatar}>{activeContact.avatar}</div>
+                <Avatar src={activeContact.avatar} name={activeContact.name} size={40} className={styles.threadAvatar} />
                 <div className={styles.threadMeta}>
                   <p className={styles.threadName}>{activeContact.name}</p>
                   {activeContact.title && (
@@ -348,7 +349,7 @@ export default function Messages() {
                       )}
                       <div className={`${styles.msgRow} ${isMe ? styles.msgRowMe : ''}`}>
                         {!isMe && (
-                          <div className={styles.msgAvatar}>{activeContact.avatar}</div>
+                          <Avatar src={activeContact.avatar} name={activeContact.name} size={32} className={styles.msgAvatar} />
                         )}
                         <div className={`${styles.bubble} ${isMe ? styles.bubbleMe : styles.bubbleThem}`}>
                           {/* File attachment */}

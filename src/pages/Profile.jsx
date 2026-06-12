@@ -1,8 +1,9 @@
-﻿import { useState } from 'react'
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useApp } from '../context/AppContext'
 import { formatCurrency } from '../utils/format'
 import ConfirmModal from '../components/ConfirmModal'
+import Avatar from '../components/Avatar'
 import styles from './Profile.module.css'
 
 const SKILLS_OPTS = ['React','Node.js','Python','Figma','UI/UX Design','Branding','SEO','Copywriting',
@@ -58,7 +59,7 @@ export default function Profile() {
           {/* â”€â”€ Left sidebar â”€â”€ */}
           <div className={styles.sidebar}>
             <div className={styles.profileCard}>
-              <div className={styles.bigAvatar}>{user.avatar}</div>
+              <Avatar src={user.avatar} name={user.name} size={64} className={styles.bigAvatar} />
               <p className={styles.profileName}>{user.name}</p>
               <p className={styles.profileRole}>{user.role === 'client' ? 'Client' : 'Freelancer'}</p>
               <p className={styles.profileSince}>Member since {user.memberSince}</p>
@@ -88,9 +89,9 @@ export default function Profile() {
                 </div>
 
                 <div className={styles.avatarSection}>
-                  <div className={styles.avatarLg}>{user.avatar}</div>
+                  <Avatar src={user.avatar} name={user.name} size={72} className={styles.avatarLg} />
                   <div>
-                    <p className={styles.avatarHint}>Your initials avatar is auto-generated from your name.</p>
+                    <p className={styles.avatarHint}>Your avatar is your Google profile photo or auto-generated initials.</p>
                   </div>
                 </div>
 

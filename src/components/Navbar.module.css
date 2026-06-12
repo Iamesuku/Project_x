@@ -99,11 +99,9 @@
 .avatarBtn { display: flex; align-items: center; }
 .avatar {
   width: 36px; height: 36px; border-radius: 50%;
-  background: var(--nexus-ink); color: var(--nexus-surface);
-  font-size: 11px; font-weight: 700;
-  display: flex; align-items: center; justify-content: center;
   transition: opacity 0.2s, transform 0.2s var(--ease-spring), box-shadow 0.2s;
   cursor: pointer;
+  overflow: hidden;
 }
 .avatar:hover { opacity: 0.85; transform: scale(1.05); box-shadow: 0 4px 14px rgba(0,0,0,0.15); }
 
@@ -127,7 +125,7 @@
 .notifSeeAll { display: block; padding: 12px 18px; font-size: 12.5px; font-weight: 500; color: var(--nexus-ink); text-align: center; border-top: 1px solid var(--nexus-border); background: var(--nexus-surface); transition: background 0.15s; }
 .notifSeeAll:hover { background: var(--nexus-border); }
 .profileMenuHead { display: flex; align-items: center; gap: 12px; padding: 16px 18px; }
-.pmAvatar { width: 36px; height: 36px; border-radius: 50%; background: var(--nexus-ink); color: var(--nexus-surface); font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.pmAvatar { width: 36px; height: 36px; border-radius: 50%; flex-shrink: 0; overflow: hidden; }
 .pmName { font-size: 14px; font-weight: 600; color: var(--nexus-ink); }
 .pmRole { font-size: 12px; color: var(--nexus-muted); text-transform: capitalize; }
 .menuRow { display: block; padding: 11px 18px; font-size: 13.5px; color: var(--nexus-mid); transition: background 0.15s, color 0.15s; width: 100%; text-align: left; border-bottom: 1px solid var(--nexus-border); }

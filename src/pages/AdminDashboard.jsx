@@ -1,7 +1,8 @@
-﻿import { useState, useMemo } from 'react'
+import { useState, useMemo } from 'react'
 import { useApp } from '../context/AppContext'
 import { seedDemoData } from '../utils/seedFirestore'
 import { setupDemoUsers, DEMO_CREDENTIALS } from '../utils/setupDemoUsers'
+import Avatar from '../components/Avatar'
 import styles from './AdminDashboard.module.css'
 
 // â”€â”€ Static mock data for demo purposes â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
@@ -442,7 +443,7 @@ export default function AdminDashboard() {
                       <tr key={u.id} className={`${styles.row} ${u.status === 'banned' ? styles.rowBanned : u.status === 'suspended' ? styles.rowSuspended : ''}`}>
                         <td>
                           <div className={styles.userCell}>
-                            <div className={styles.tableAvatar}>{u.avatar}</div>
+                          <Avatar src={u.avatar} name={u.name} size={32} className={styles.tableAvatar} />
                             <div>
                               <p className={styles.userName}>{u.name}</p>
                               <p className={styles.userEmail}>{u.email}</p>

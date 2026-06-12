@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Link, Navigate } from 'react-router-dom'
 import { useApp } from '../context/AppContext'
 import { formatCurrency } from '../utils/format'
+import Avatar from '../components/Avatar'
 import styles from './Dashboard.module.css'
 
 /* ── Analytics: pure-SVG bar chart ──────────────────────────────────────── */
@@ -310,7 +311,7 @@ export default function Dashboard() {
         {/* Header */}
         <div className={styles.pageHeader}>
           <div className={styles.userRow}>
-            <div className={styles.bigAvatar}>{user.avatar}</div>
+            <Avatar src={user.avatar} name={user.name} size={56} className={styles.bigAvatar} />
             <div>
               <p className={styles.greeting}>Good day,</p>
               <h1 className={styles.name}>{user.name}</h1>
@@ -495,7 +496,7 @@ export default function Dashboard() {
                         {props.map(p => (
                           <div key={p.id} className={`${styles.propCard} ${p.status==='accepted'?styles.propAccepted:''}`}>
                             <div className={styles.propTop}>
-                              <div className={styles.propAvatar}>{p.freelancer?.avatar||'F'}</div>
+                              <Avatar src={p.freelancer?.avatar} name={p.freelancer?.name || 'F'} size={36} className={styles.propAvatar} />
                               <div className={styles.propMeta}>
                                 <p className={styles.propName}>{p.freelancer?.name||'Freelancer'}</p>
                                 <p className={styles.propTitle}>{p.freelancer?.title||''}</p>

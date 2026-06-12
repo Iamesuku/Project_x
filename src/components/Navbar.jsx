@@ -2,6 +2,7 @@ import { useState, useEffect, useRef, useCallback } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useApp } from '../context/AppContext'
 import { formatCurrency } from '../utils/format'
+import Avatar from './Avatar'
 import styles from './Navbar.module.css'
 
 // ── Dark mode management ──────────────────────────────────────────────────
@@ -90,7 +91,7 @@ function ProfileMenu({ user, onClose }) {
   return (
     <div className={styles.dropdown} role="menu" aria-label="Account menu">
       <div className={styles.profileMenuHead}>
-        <div className={styles.pmAvatar} aria-hidden="true">{user.avatar}</div>
+        <Avatar src={user.avatar} name={user.name} size={36} className={styles.pmAvatar} />
         <div>
           <p className={styles.pmName}>{user.name}</p>
           <p className={styles.pmRole}>{user.role === 'client' ? 'Client' : 'Freelancer'}</p>
@@ -253,7 +254,7 @@ export default function Navbar() {
                   aria-expanded={profileOpen}
                   aria-haspopup="true"
                 >
-                  <div className={styles.avatar} aria-hidden="true">{user.avatar}</div>
+                  <Avatar src={user.avatar} name={user.name} size={36} className={styles.avatar} />
                 </button>
                 {profileOpen && <ProfileMenu user={user} onClose={() => setProfileOpen(false)} />}
               </div>

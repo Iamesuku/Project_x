@@ -1,10 +1,11 @@
-import { useState } from 'react'
+﻿import { useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { useApp } from '../context/AppContext'
 import TrustBadge from '../components/TrustBadge'
+import Avatar from '../components/Avatar'
 import styles from './FreelancerProfile.module.css'
 
-/* ── Mock reviews keyed by freelancer id pattern ── */
+/* â”€â”€ Mock reviews keyed by freelancer id pattern â”€â”€ */
 const MOCK_REVIEWS_POOL = [
   {
     id: 'r1',
@@ -22,7 +23,7 @@ const MOCK_REVIEWS_POOL = [
     rating: 5,
     date: '28 Mar 2026',
     comment:
-      'Very professional and communicative throughout the project. The final product exceeded my expectations — responsive, fast, and clean. A true gem on NEXUS.',
+      'Very professional and communicative throughout the project. The final product exceeded my expectations â€” responsive, fast, and clean. A true gem on NEXUS.',
   },
   {
     id: 'r3',
@@ -62,7 +63,7 @@ const MOCK_REVIEWS_POOL = [
   },
 ]
 
-/* ── Deterministically pick 4–5 reviews per freelancer ── */
+/* â”€â”€ Deterministically pick 4â€“5 reviews per freelancer â”€â”€ */
 function getMockReviews(freelancerId) {
   // Use last char of id to vary which reviews show
   const seed = freelancerId ? freelancerId.charCodeAt(freelancerId.length - 1) % 2 : 0
@@ -71,20 +72,20 @@ function getMockReviews(freelancerId) {
     : MOCK_REVIEWS_POOL.slice(1, 6)
 }
 
-/* ── Star renderer (filled + empty) ── */
+/* â”€â”€ Star renderer (filled + empty) â”€â”€ */
 function Stars({ rating, size = 14 }) {
   return (
     <span className={styles.starRow} style={{ fontSize: size }}>
       {[1, 2, 3, 4, 5].map((n) => (
         <span key={n} className={n <= rating ? styles.starFilled : styles.starEmpty}>
-          ★
+          â˜…
         </span>
       ))}
     </span>
   )
 }
 
-/* ── Single review card ── */
+/* â”€â”€ Single review card â”€â”€ */
 function ReviewCard({ review, delay = 0 }) {
   return (
     <div className={styles.reviewCard} style={{ animationDelay: `${delay}ms` }}>
@@ -103,7 +104,7 @@ function ReviewCard({ review, delay = 0 }) {
   )
 }
 
-/* ── Rating summary + bar chart ── */
+/* â”€â”€ Rating summary + bar chart â”€â”€ */
 function RatingSummary({ reviews, freelancer }) {
   const totalReviews = freelancer.reviews
   const avgRating = freelancer.rating
@@ -144,7 +145,7 @@ function RatingSummary({ reviews, freelancer }) {
           const pct = totalReviews > 0 ? (count / totalReviews) * 100 : 0
           return (
             <div key={star} className={styles.barRow}>
-              <span className={styles.barLabel}>{star} ★</span>
+              <span className={styles.barLabel}>{star} â˜…</span>
               <div className={styles.barTrack}>
                 <div
                   className={styles.barFill}
@@ -161,7 +162,7 @@ function RatingSummary({ reviews, freelancer }) {
   )
 }
 
-/* ══════════════════════════════════════════════════ */
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 export default function FreelancerProfile() {
   const { id } = useParams()
   const { freelancers, savedFreelancers, toggleSaveFreelancer, reviews, user } = useApp()
@@ -173,7 +174,7 @@ export default function FreelancerProfile() {
       <div className={styles.notFound}>
         <p>Freelancer not found.</p>
         <Link to="/browse" className={styles.back}>
-          ← Back to talent
+          â† Back to talent
         </Link>
       </div>
     )
@@ -193,23 +194,23 @@ export default function FreelancerProfile() {
       <div className="container">
         <div className={styles.topBar}>
           <Link to="/browse" className={styles.backLink}>
-            ← Back to talent
+            â† Back to talent
           </Link>
           <button
             className={`${styles.saveBtn} ${isSaved ? styles.saveBtnActive : ''}`}
             onClick={() => toggleSaveFreelancer(f.id)}
           >
-            {isSaved ? '♥ Saved' : '♡ Save'}
+            {isSaved ? 'â™¥ Saved' : 'â™¡ Save'}
           </button>
         </div>
 
         <div className={styles.layout}>
-          {/* ── Main ── */}
+          {/* â”€â”€ Main â”€â”€ */}
           <div className={styles.main}>
             {/* Hero card */}
             <div className={styles.heroCard}>
               <div className={styles.profileHead}>
-                <div className={styles.avatar}>{f.avatar}</div>
+                <Avatar src={f.avatar} name={f.name} size={80} className={styles.avatar} />
                 <div className={styles.profileMeta}>
                   <h1 className={styles.name}>{f.name}</h1>
                   <p className={styles.jobTitle}>{f.title}</p>
@@ -222,11 +223,11 @@ export default function FreelancerProfile() {
                   </p>
                   <div className={styles.ratingRow}>
                     <span className={styles.stars}>
-                      {'★'.repeat(Math.floor(f.rating))}{'☆'.repeat(5 - Math.floor(f.rating))}
+                      {'â˜…'.repeat(Math.floor(f.rating))}{'â˜†'.repeat(5 - Math.floor(f.rating))}
                     </span>
                     <span className={styles.ratingVal}>{f.rating.toFixed(1)}</span>
                     <span className={styles.reviewCount}>({f.reviews} reviews)</span>
-                    <span className={styles.dividerDot}>·</span>
+                    <span className={styles.dividerDot}>Â·</span>
                     <span className={styles.jobsDone}>{f.completedJobs} jobs</span>
                   </div>
                   <div className={styles.trustBadgeWrap}>
@@ -234,7 +235,7 @@ export default function FreelancerProfile() {
                   </div>
                 </div>
                 <div className={styles.rateBlock}>
-                  <p className={styles.rate}>₦{f.rate}<span>/hr</span></p>
+                  <p className={styles.rate}>â‚¦{f.rate}<span>/hr</span></p>
                   <p className={styles.rateLabel}>Hourly rate</p>
                 </div>
               </div>
@@ -256,7 +257,7 @@ export default function FreelancerProfile() {
                 ))}
               </div>
 
-              {/* ── About tab ── */}
+              {/* â”€â”€ About tab â”€â”€ */}
               {activeTab === 'about' && (
                 <div className={styles.tabContent}>
                   <h2 className={styles.sectionTitle}>About {f.name.split(' ')[0]}</h2>
@@ -277,7 +278,7 @@ export default function FreelancerProfile() {
                 </div>
               )}
 
-              {/* ── Skills tab ── */}
+              {/* â”€â”€ Skills tab â”€â”€ */}
               {activeTab === 'skills' && (
                 <div className={styles.tabContent}>
                   <h2 className={styles.sectionTitle}>Skills &amp; expertise</h2>
@@ -292,7 +293,7 @@ export default function FreelancerProfile() {
                 </div>
               )}
 
-              {/* ── Reviews tab ── */}
+              {/* â”€â”€ Reviews tab â”€â”€ */}
               {activeTab === 'reviews' && (
                 <div className={styles.tabContent}>
                   {/* Overall rating summary */}
@@ -322,13 +323,13 @@ export default function FreelancerProfile() {
             </div>
           </div>
 
-          {/* ── Sidebar ── */}
+          {/* â”€â”€ Sidebar â”€â”€ */}
           <div className={styles.sidebar}>
             <div className={styles.sideCard}>
-              <p className={styles.sideRate}>₦{f.rate}<span>/hr</span></p>
+              <p className={styles.sideRate}>â‚¦{f.rate}<span>/hr</span></p>
               <div className={styles.sideStats}>
                 {[
-                  ['Rating', `${f.rating} ★`],
+                  ['Rating', `${f.rating} â˜…`],
                   ['Reviews', f.reviews],
                   ['Jobs done', f.completedJobs],
                   ['Category', f.category],
@@ -341,7 +342,7 @@ export default function FreelancerProfile() {
               </div>
               <div className={styles.sideActions}>
                 <Link to="/post-job" className={styles.hireBtn}>
-                  Hire {f.name.split(' ')[0]} →
+                  Hire {f.name.split(' ')[0]} â†’
                 </Link>
                 <Link to={`/messages/${f.id}`} className={styles.msgBtn}>
                   Send message
@@ -356,12 +357,12 @@ export default function FreelancerProfile() {
                 .slice(0, 3)
                 .map((sim) => (
                   <Link key={sim.id} to={`/freelancer/${sim.id}`} className={styles.simRow}>
-                    <div className={styles.simAvatar}>{sim.avatar}</div>
+                    <Avatar src={sim.avatar} name={sim.name} size={36} className={styles.simAvatar} />
                     <div className={styles.simInfo}>
                       <p className={styles.simName}>{sim.name}</p>
                       <p className={styles.simTitle}>{sim.title}</p>
                     </div>
-                    <span className={styles.simRate}>₦{sim.rate}/hr</span>
+                    <span className={styles.simRate}>â‚¦{sim.rate}/hr</span>
                   </Link>
                 ))}
             </div>
