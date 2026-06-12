@@ -66,12 +66,10 @@ function PublicRoute({ children }) {
 }
 
 function AdminRoute({ children }) {
-  const { isLoggedIn, isLoading } = useApp()
+  const { isLoggedIn, isLoading, user } = useApp()
   if (isLoading) return null
-  // ── Temporarily open to any logged-in user so admin setup can be run ──
-  // Re-lock after demo users are created by restoring the isAdmin check:
-  //   if (!user.isAdmin && user.role !== 'admin') return <Navigate to="/dashboard" replace />
   if (!isLoggedIn) return <Navigate to="/auth" replace />
+  if (!user.isAdmin && user.role !== 'admin') return <Navigate to="/dashboard" replace />
   return children
 }
 

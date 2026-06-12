@@ -44,6 +44,18 @@ const DEMO_ACCOUNTS = [
     },
     wallet: { balance: 1200, escrow: 0, earned: 8400, currency: 'NGN' },
   },
+  {
+    email:    'admin@nexus.edu',
+    password: 'Demo1234!',
+    profile: {
+      name: 'Platform Admin', avatar: 'AD', role: 'admin', isAdmin: true,
+      bio: 'System Administrator for NEXUS platform.',
+      location: 'HQ', skills: [], hourlyRate: 0,
+      rating: 0, reviewCount: 0, completedJobs: 0,
+      isDemoAccount: true,
+    },
+    wallet: { balance: 0, escrow: 0, earned: 0, currency: 'NGN' },
+  },
 ]
 
 export default function DemoSetup() {
@@ -155,12 +167,12 @@ export default function DemoSetup() {
           <p style={{ fontSize: 11, color: '#555', textTransform: 'uppercase', letterSpacing: 2, marginBottom: 8 }}>NEXUS · Developer Utility</p>
           <h1 style={{ fontSize: 24, fontWeight: 700, color: '#fff', margin: 0 }}>Demo User Setup</h1>
           <p style={{ fontSize: 13, color: '#666', marginTop: 6, lineHeight: 1.6 }}>
-            Deletes old test profiles, creates 2 loginable demo accounts, and seeds 14 demo freelancers + 11 demo jobs to Firestore.
+            Deletes old test profiles, creates 3 loginable demo accounts, and seeds 14 demo freelancers + 11 demo jobs to Firestore.
           </p>
         </div>
 
         {/* Accounts preview */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 24 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: 10, marginBottom: 24 }}>
           {DEMO_ACCOUNTS.map(a => (
             <div key={a.email} style={{
               background: '#1a1a1a', borderRadius: 10, padding: '12px 14px',
@@ -222,7 +234,8 @@ export default function DemoSetup() {
             </p>
             <p style={{ color: '#86efac', fontSize: 12, lineHeight: 2, margin: 0 }}>
               <strong>Client:</strong> client@nexus.edu / Demo1234!<br />
-              <strong>Freelancer:</strong> emeka@nexus.edu / Demo1234!
+              <strong>Freelancer:</strong> emeka@nexus.edu / Demo1234!<br />
+              <strong>Admin:</strong> admin@nexus.edu / Demo1234!
             </p>
             <a
               href="/auth"

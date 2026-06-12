@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, Navigate } from 'react-router-dom'
 import { useApp } from '../context/AppContext'
 import { formatCurrency } from '../utils/format'
 import styles from './Dashboard.module.css'
@@ -282,6 +282,10 @@ function AnalyticsTab({ contracts, proposals, user, transactions }) {
 export default function Dashboard() {
   const { user, wallet, transactions, jobs, proposals, freelancers, acceptProposal, contracts } = useApp()
   const [activeTab, setActiveTab] = useState('overview')
+  
+  if (user?.isAdmin || user?.role === 'admin') {
+    return <Navigate to="/admin" replace />
+  }
 
   const postedJobs = jobs.filter(j => j.clientId === user.id)
   const totalProposals = postedJobs.reduce((s, j) => s + (proposals[j.id]?.length || 0), 0)

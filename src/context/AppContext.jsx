@@ -505,12 +505,16 @@ export function AppProvider({ children }) {
   }
 
   // ── Jobs ───────────────────────────────────────────────────────────────
-  function postJob(jobData) {
+  async function postJob(jobData) {
     const clientId = firebaseUser?.uid || user.id
     const job = { id:`j${uid()}`, ...jobData, posted:'Just now', proposals:0, clientId, status:'open' }
     setJobs(p => [job, ...p])
     if (firebaseUser) {
-      setDoc(doc(db, 'jobs', job.id), { ...job, createdAt: serverTimestamp() }).catch(() => {})
+      try {
+        await setDoc(doc(db, 'jobs', job.id), { ...job, createdAt: serverTimestamp() })
+      } catch (e) {
+        console.error('Failed to post job to Firestore:', e)
+      }
     }
     addNotif(`"${job.title}" is live — students can now apply.`, `/job/${job.id}`)
     toast(`"${job.title}" posted!`)
@@ -522,7 +526,7 @@ export function AppProvider({ children }) {
   }
 
   // ── Proposals ──────────────────────────────────────────────────────────
-  function submitProposal(jobId, data) {
+  async function submitProposal(jobId, data) {
     const job = jobs.find(j => j.id === jobId)
     if (job?.isDemo) {
       toast('This is a demonstration listing — submit proposals on real posted jobs.', 'error')
@@ -535,7 +539,11 @@ export function AppProvider({ children }) {
     setProposals(prev => ({ ...prev, [jobId]: updatedProps }))
     setJobs(prev => prev.map(j => j.id === jobId ? { ...j, proposals: (j.proposals || 0) + 1 } : j))
     if (firebaseUser) {
-      setDoc(doc(db, 'proposals', p.id), { ...p, clientId: job?.clientId || '' }).catch(() => {})
+      try {
+        await setDoc(doc(db, 'proposals', p.id), { ...p, clientId: job?.clientId || '' })
+      } catch (e) {
+        console.error('Failed to save proposal to Firestore:', e)
+      }
     }
     toast('Proposal submitted!')
   }
