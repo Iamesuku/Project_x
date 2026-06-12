@@ -132,11 +132,23 @@ export default function Wallet() {
   const activeContract = contracts?.find(c => c.status === 'active')
 
   function handleRelease(amt) {
-    return releaseEscrow(amt, activeContract?.jobTitle || 'Project', activeContract?.id || null)
+    return releaseEscrow(
+      amt,
+      activeContract?.jobTitle || 'Project',
+      activeContract?.id || null,
+      activeContract?.freelancerId || null
+    )
   }
 
   return (
     <div className={styles.page}>
+      <div className={styles.simBanner} role="status">
+        <span className={styles.simIcon}>🔬</span>
+        <span>
+          <strong>Simulation mode</strong> — wallet balances and transactions are for demonstration only.
+          Real payments are not processed.
+        </span>
+      </div>
       <div className="container">
         <div className={styles.header}>
           <div>
@@ -153,7 +165,7 @@ export default function Wallet() {
             <p className={styles.statSub}>Ready to use</p>
             <div className={styles.statActions}>
               <button className={styles.actionBtn} onClick={() => setModal('deposit')}>
-                + Add funds
+                + Simulate deposit
               </button>
               <button
                 className={`${styles.actionBtn} ${styles.actionOutline}`}

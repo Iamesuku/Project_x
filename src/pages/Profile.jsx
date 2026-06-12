@@ -1,4 +1,4 @@
-import { useState } from 'react'
+﻿import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useApp } from '../context/AppContext'
 import { formatCurrency } from '../utils/format'
@@ -37,7 +37,7 @@ export default function Profile() {
 
   function handleSave(e) {
     e.preventDefault()
-    // Never send email through updateUser — email changes need Firebase Auth
+    // Never send email through updateUser â€” email changes need Firebase Auth
     const { ...rest } = form
     updateUser(rest)
     setSaved(true)
@@ -55,7 +55,7 @@ export default function Profile() {
         </div>
 
         <div className={styles.layout}>
-          {/* ── Left sidebar ── */}
+          {/* â”€â”€ Left sidebar â”€â”€ */}
           <div className={styles.sidebar}>
             <div className={styles.profileCard}>
               <div className={styles.bigAvatar}>{user.avatar}</div>
@@ -76,7 +76,7 @@ export default function Profile() {
 
           </div>
 
-          {/* ── Main panel ── */}
+          {/* â”€â”€ Main panel â”€â”€ */}
           <div className={styles.main}>
 
             {/* Profile tab */}
@@ -142,18 +142,18 @@ export default function Profile() {
                     className={styles.textarea}
                     rows={4}
                     maxLength={300}
-                    placeholder="Tell clients and freelancers about yourself…"
+                    placeholder="Tell clients and freelancers about yourselfâ€¦"
                     value={form.bio}
                     onChange={e => set('bio', e.target.value)}
                   />
                   <p className={`${styles.hint} ${form.bio.length >= 280 ? styles.hintWarn : ''}`}>
-                    {form.bio.length}/300{form.bio.length >= 300 ? ' — limit reached' : ''}
+                    {form.bio.length}/300{form.bio.length >= 300 ? ' â€” limit reached' : ''}
                   </p>
                 </div>
 
                 <div className={styles.formActions}>
                   <button type="submit" className={`${styles.saveBtn} ${saved ? styles.saveBtnSaved : ''}`}>
-                    {saved ? '✓ Saved!' : 'Save changes'}
+                    {saved ? 'âœ“ Saved!' : 'Save changes'}
                   </button>
                 </div>
               </form>
@@ -169,9 +169,9 @@ export default function Profile() {
 
                 {user.role === 'freelancer' && (
                   <div className={styles.field}>
-                    <label className={styles.label}>Hourly rate (₦/hr)</label>
+                    <label className={styles.label}>Hourly rate (â‚¦/hr)</label>
                     <div className={styles.rateWrap}>
-                      <span className={styles.ratePrefix}>₦</span>
+                      <span className={styles.ratePrefix}>â‚¦</span>
                       <input className={`${styles.input} ${styles.rateInput}`} type="number" min="1" placeholder="e.g. 5000" value={form.hourlyRate} onChange={e => set('hourlyRate', e.target.value)} />
                       <span className={styles.rateSuffix}>/hr</span>
                     </div>
@@ -197,7 +197,7 @@ export default function Profile() {
 
                 <div className={styles.formActions}>
                   <button type="submit" className={`${styles.saveBtn} ${saved ? styles.saveBtnSaved : ''}`}>
-                    {saved ? '✓ Saved!' : 'Save changes'}
+                    {saved ? 'âœ“ Saved!' : 'Save changes'}
                   </button>
                 </div>
               </form>

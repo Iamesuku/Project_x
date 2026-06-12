@@ -86,7 +86,7 @@ function AnalyticsTab({ contracts, proposals, user, transactions }) {
     : earningsThisMonth > 0 ? 100 : 0
 
   // ── Proposals stats ──
-  const allProposals = Object.values(proposals).flat()
+  const allProposals = Object.values(proposals).flat().filter(Boolean)
   const myProposals  = allProposals.filter(p => p.freelancer?.id === user.id)
   const sent         = myProposals.length
   const accepted     = myProposals.filter(p => p.status === 'accepted').length

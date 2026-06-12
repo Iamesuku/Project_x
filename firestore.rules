@@ -2,17 +2,21 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // Users — any authenticated user can read; only owner can write their profile
+    // Users — any authenticated user can read; owner can write (but cannot set isAdmin via client)
     match /users/{userId} {
       allow read: if request.auth != null;
-      allow write: if request.auth != null && request.auth.uid == userId;
+      allow create: if request.auth != null && request.auth.uid == userId;
+      allow update: if request.auth != null
+        && request.auth.uid == userId
+        && !('isAdmin' in request.resource.data.diff(resource.data).affectedKeys());
     }
 
     // Jobs — any authenticated user can read; creator (clientId) can update/delete
     match /jobs/{jobId} {
       allow read: if request.auth != null;
       allow create: if request.auth != null;
-      allow update, delete: if request.auth != null && request.auth.uid == resource.data.clientId;
+      allow update, delete: if request.auth != null
+        && request.auth.uid == resource.data.clientId;
     }
 
     // Proposals — anyone logged in can create; client or freelancer can read/update
@@ -28,21 +32,25 @@ service cloud.firestore {
       );
     }
 
-    // Wallets — owner only
+    // Wallets — owner can always read their own wallet.
+    // Write is relaxed for all authenticated users to support client-side escrow
+    // release crediting the freelancer's wallet (no Cloud Functions on free tier).
+    // TODO: Move wallet mutations to a Cloud Function before production launch.
     match /wallets/{userId} {
-      allow read, write: if request.auth != null && request.auth.uid == userId;
+      allow read: if request.auth != null && request.auth.uid == userId;
+      allow write: if request.auth != null;
     }
 
-    // Contracts — client or freelancer can read/write
+    // Contracts — client or freelancer can read/update; any authenticated user can create
     match /contracts/{contractId} {
-      allow read, write: if request.auth != null && (
+      allow create: if request.auth != null;
+      allow read, update: if request.auth != null && (
         request.auth.uid == resource.data.clientId ||
         request.auth.uid == resource.data.freelancerId
       );
-      allow create: if request.auth != null;
     }
 
-    // Threads and messages — any authenticated user
+    // Messages & Threads — authenticated users only
     match /threads/{threadId} {
       allow read, write: if request.auth != null;
     }
@@ -50,27 +58,31 @@ service cloud.firestore {
       allow read, write: if request.auth != null;
     }
 
-    // Notifications — any authenticated user
+    // Notifications — any authenticated user can create (for system cross-user notifications);
+    // only the owner can read, update, or delete their own notifications
     match /notifications/{notifId} {
-      allow read, write: if request.auth != null;
+      allow create: if request.auth != null;
+      allow read, update, delete: if request.auth != null
+        && request.auth.uid == resource.data.userId;
     }
 
-    // Reviews
+    // Reviews — anyone can read/create; only author can update or delete
     match /reviews/{reviewId} {
       allow read: if request.auth != null;
       allow create: if request.auth != null;
-      allow update, delete: if request.auth != null && request.auth.uid == resource.data.reviewerId;
+      allow update, delete: if request.auth != null
+        && request.auth.uid == resource.data.fromId;
     }
 
-    // Disputes
+    // Disputes — anyone can read/create; only original filer or an admin can update
     match /disputes/{disputeId} {
-      allow read, write: if request.auth != null;
+      allow read: if request.auth != null;
+      allow create: if request.auth != null;
+      allow update: if request.auth != null && (
+        request.auth.uid == resource.data.userId ||
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true
+      );
     }
 
-    // Admin bypass — isAdmin users can do anything
-    match /{document=**} {
-      allow read, write: if request.auth != null
-        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true;
-    }
   }
 }

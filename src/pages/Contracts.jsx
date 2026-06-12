@@ -65,7 +65,7 @@ function ApproveModal({ contract, onClose, onConfirm }) {
   const [success, setSuccess] = useState(false)
 
   function handleConfirm() {
-    onConfirm(contract.amount, contract.jobTitle, contract.id)
+    onConfirm(contract.amount, contract.jobTitle, contract.id, contract.freelancerId)
     setSuccess(true)
   }
 
@@ -276,7 +276,7 @@ function ContractCard({ contract, onRelease, onToggleMilestone, onDispute, onApp
           </p>
           {wallet.escrow >= contract.amount ? (
             <div className={styles.releasePanelActions}>
-              <button className={styles.confirmRelease} onClick={() => { onRelease(contract.amount, contract.jobTitle, contract.id); setShowRelease(false) }}>
+              <button className={styles.confirmRelease} onClick={() => { onRelease(contract.amount, contract.jobTitle, contract.id, contract.freelancerId); setShowRelease(false) }}>
                 ✓ Confirm release
               </button>
               <button className={styles.cancelRelease} onClick={() => setShowRelease(false)}>Cancel</button>
@@ -314,8 +314,8 @@ export default function Contracts() {
   const disputed  = contracts.filter(c => c.status === 'disputed').length
   const pending   = contracts.filter(c => c.status === 'pending_approval').length
 
-  function handleApproveRelease(amount, jobTitle, contractId) {
-    releaseEscrow(amount, jobTitle, contractId)
+  function handleApproveRelease(amount, jobTitle, contractId, freelancerId) {
+    releaseEscrow(amount, jobTitle, contractId, freelancerId)
     setApproveContract(null)
   }
 

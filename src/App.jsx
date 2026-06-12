@@ -203,8 +203,10 @@ function AppRoutes() {
           <AdminRoute><><Navbar /><AdminDashboard /></></AdminRoute>
         } />
 
-        {/* Dev-only setup page — no auth required */}
-        <Route path="/setup" element={<DemoSetup />} />
+        {/* Dev-only setup page — stripped from production builds automatically */}
+        {import.meta.env.DEV && (
+          <Route path="/setup" element={<DemoSetup />} />
+        )}
 
         {/* 404 catch-all */}
         <Route path="*" element={<WithLayout><NotFound /></WithLayout>} />

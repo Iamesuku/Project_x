@@ -338,7 +338,11 @@ export function AppProvider({ children }) {
         )
         unsubNotifs.current = onSnapshot(notifsQ, snap => {
           const fsNotifs = snap.docs.map(d => ({ ...d.data(), id: d.id }))
-          fsNotifs.sort((a, b) => (b.ts || 0) - (a.ts || 0))
+          fsNotifs.sort((a, b) => {
+            const tsA = a.ts?.toMillis ? a.ts.toMillis() : new Date(a.ts || 0).getTime()
+            const tsB = b.ts?.toMillis ? b.ts.toMillis() : new Date(b.ts || 0).getTime()
+            return tsB - tsA
+          })
           setNotifications(fsNotifs)
         })
       } catch { setNotifications([]) }
@@ -468,7 +472,8 @@ export function AppProvider({ children }) {
     return true
   }
 
-  function releaseEscrow(amount, jobTitle, contractId) {
+  // freelancerId is passed explicitly to avoid stale closure on the contracts array
+  function releaseEscrow(amount, jobTitle, contractId, freelancerId) {
     const amt = parseFloat(amount)
     persistWallet({ ...wallet, escrow: +Math.max(0, wallet.escrow - amt).toFixed(2), earned: +(wallet.earned + amt).toFixed(2) })
     setTransactions(p => [{ id:uid(), type:'release', amount:amt, desc:`Payment released: ${jobTitle}`, date:today(), status:'completed' }, ...p])
@@ -477,9 +482,8 @@ export function AppProvider({ children }) {
       if (firebaseUser) {
         // Persist contract completion
         updateDoc(doc(db, 'contracts', contractId), { status: 'completed', completedDate: today() }).catch(() => {})
-        // Credit the freelancer's wallet in Firestore
-        const contract = contracts.find(c => c.id === contractId)
-        const fId = contract?.freelancerId
+        // Credit the freelancer's wallet in Firestore (fId passed in explicitly — no stale closure)
+        const fId = freelancerId
         if (fId && !/^f\d+$/.test(fId) && fId !== 'f_unknown') {
           getDoc(doc(db, 'wallets', fId)).then(snap => {
             const fw = snap.exists() ? snap.data() : { balance: 0, escrow: 0, earned: 0, currency: 'NGN' }
@@ -630,16 +634,6 @@ export function AppProvider({ children }) {
     return [id1, id2].sort().join('_')
   }
 
-  // sendMessage is now handled by messageService.js in Messages.jsx
-  // kept here as a no-op stub so legacy callers don't crash
-  function sendMessage(toId, text) {
-    console.warn('AppContext.sendMessage is deprecated. Use messageService.sendMessage instead.')
-  }
-
-  function getThread(otherId) {
-    return [] // real-time data lives in Messages.jsx via subscribeToThread
-  }
-
   function getContacts() {
     // Build contacts list from RTDB threads (set by subscribeToThreads in useEffect)
     return threads.map(t => ({
@@ -722,7 +716,6 @@ export function AppProvider({ children }) {
       isLoading,
       // auth
       isLoggedIn, user, setUser: setUserState, login, signup, logout, updateUser,
-      authLoading: isLoading,
       firebaseUser,
       // wallet
       wallet, transactions, depositFunds, withdrawFunds, fundEscrow, releaseEscrow,
@@ -733,7 +726,7 @@ export function AppProvider({ children }) {
       // contracts
       contracts, updateContractProgress, toggleMilestone, markContractComplete,
       // messages (legacy surface — Messages.jsx uses messageService directly)
-      sendMessage, getThread, getContacts,
+      getContacts,
       // notifications
       notifications, unreadNotifCount, markNotifsRead, clearNotif, addNotif,
       // saved

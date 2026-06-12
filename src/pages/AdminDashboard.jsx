@@ -1,10 +1,10 @@
-import { useState, useMemo } from 'react'
+﻿import { useState, useMemo } from 'react'
 import { useApp } from '../context/AppContext'
 import { seedDemoData } from '../utils/seedFirestore'
 import { setupDemoUsers, DEMO_CREDENTIALS } from '../utils/setupDemoUsers'
 import styles from './AdminDashboard.module.css'
 
-// ── Static mock data for demo purposes ───────────────────────────────────────
+// â”€â”€ Static mock data for demo purposes â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const MOCK_USERS = [
   { id: 'u1', name: 'Alex Johnson',    avatar: 'AJ', email: 'alex@uninexus.edu',     role: 'client',     status: 'active',    joined: '2026-02-01', trustScore: 92, jobs: 7  },
   { id: 'u2', name: 'Amara Osei',      avatar: 'AO', email: 'amara@uninexus.edu',    role: 'freelancer', status: 'active',    joined: '2026-01-15', trustScore: 98, jobs: 84 },
@@ -19,18 +19,18 @@ const MOCK_USERS = [
 ]
 
 const MOCK_REPORTED_JOBS = [
-  { id: 'rj1', jobId: 'j4',  title: 'Data pipeline in Python + AWS',              category: 'Development & IT',    reportCount: 3, reason: 'Misleading scope — budget listed as $2,000 but actual payment released is $200.', reportedAt: '2026-04-10', status: 'open',     reporter: 'Sofia Lindqvist' },
+  { id: 'rj1', jobId: 'j4',  title: 'Data pipeline in Python + AWS',              category: 'Development & IT',    reportCount: 3, reason: 'Misleading scope â€” budget listed as $2,000 but actual payment released is $200.', reportedAt: '2026-04-10', status: 'open',     reporter: 'Sofia Lindqvist' },
   { id: 'rj2', jobId: 'j11', title: 'Manage our faculty Instagram for 1 month',   category: 'Sales & Marketing',   reportCount: 5, reason: 'Posting unprofessional and offensive content on job description.', reportedAt: '2026-04-09', status: 'open',     reporter: 'Seun Adeyemi'    },
   { id: 'rj3', jobId: 'j2',  title: 'Brand identity for fintech startup',         category: 'Design & Creative',   reportCount: 1, reason: 'Suspected duplicate of existing posted job (j1). Possible spam.', reportedAt: '2026-04-08', status: 'reviewed', reporter: 'Amara Osei'      },
-  { id: 'rj4', jobId: 'j7',  title: 'Mobile app UI design – iOS & Android',       category: 'Design & Creative',   reportCount: 2, reason: 'Contact details embedded in description to bypass platform payments.', reportedAt: '2026-04-07', status: 'removed',  reporter: 'Fatima Al-Hassan' },
-  { id: 'rj5', jobId: 'j9',  title: 'Need a tutor for Calculus — 4 sessions',    category: 'Academic Support',    reportCount: 1, reason: 'Budget appears inflated (₦8,000 for 4 hours — possible scam).', reportedAt: '2026-04-06', status: 'open',     reporter: 'Chidi Okonkwo'   },
+  { id: 'rj4', jobId: 'j7',  title: 'Mobile app UI design â€“ iOS & Android',       category: 'Design & Creative',   reportCount: 2, reason: 'Contact details embedded in description to bypass platform payments.', reportedAt: '2026-04-07', status: 'removed',  reporter: 'Fatima Al-Hassan' },
+  { id: 'rj5', jobId: 'j9',  title: 'Need a tutor for Calculus â€” 4 sessions',    category: 'Academic Support',    reportCount: 1, reason: 'Budget appears inflated (â‚¦8,000 for 4 hours â€” possible scam).', reportedAt: '2026-04-06', status: 'open',     reporter: 'Chidi Okonkwo'   },
 ]
 
 const TABS = ['overview', 'users', 'reports']
 
 const TAB_LABELS = { overview: 'Overview', users: 'User Management', reports: 'Reported Jobs' }
 
-// ── Icons (inline SVG) ────────────────────────────────────────────────────────
+// â”€â”€ Icons (inline SVG) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const Icon = {
   Users:    () => <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><path strokeLinecap="round" d="M17 20h5v-2a4 4 0 00-3-3.87M17 20H7m10 0v-2c0-.66-.13-1.3-.37-1.87M7 20H2v-2a4 4 0 013-3.87M7 20v-2c0-.66.13-1.3.37-1.87m0 0A4 4 0 1110 8a4 4 0 01-2.63 9.13M21 8a4 4 0 11-8 0 4 4 0 018 0z"/></svg>,
   Briefcase:() => <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/></svg>,
@@ -43,7 +43,7 @@ const Icon = {
   Trash:    () => <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="1.75" viewBox="0 0 24 24"><path strokeLinecap="round" d="M3 6h18m-2 0l-1.5 13A2 2 0 0115.5 21h-7a2 2 0 01-1.99-1.82L5 6m4-3h6m-6 0a1 1 0 00-1 1v1h8V4a1 1 0 00-1-1m-6 0h6"/></svg>,
 }
 
-// ── Trust score colour ────────────────────────────────────────────────────────
+// â”€â”€ Trust score colour â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function trustColor(score) {
   if (score >= 80) return 'var(--success)'
   if (score >= 50) return 'var(--warning)'
@@ -54,18 +54,18 @@ export default function AdminDashboard() {
   const { jobs, transactions, freelancers } = useApp()
   const [activeTab, setActiveTab] = useState('overview')
 
-  // ── User Management state ─────────────────────────────────────────────
+  // â”€â”€ User Management state â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const [users, setUsers]           = useState(MOCK_USERS)
   const [userSearch, setUserSearch] = useState('')
   const [userFilter, setUserFilter] = useState('all')  // all | active | suspended | banned
-  const [confirmRow, setConfirmRow] = useState(null)   // { id, action } — pending confirmation
+  const [confirmRow, setConfirmRow] = useState(null)   // { id, action } â€” pending confirmation
 
-  // ── Reported Jobs state ───────────────────────────────────────────────
+  // â”€â”€ Reported Jobs state â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const [reports, setReports]             = useState(MOCK_REPORTED_JOBS)
   const [reportFilter, setReportFilter]   = useState('all')  // all | open | reviewed | removed
   const [expandedReport, setExpandedReport] = useState(null)
 
-  // ── Seed state ────────────────────────────────────────────────────────
+  // â”€â”€ Seed state â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const [seedStatus, setSeedStatus] = useState(null) // null | 'running' | 'done' | 'already' | 'error'
   const [seedProgress, setSeedProgress] = useState({ done: 0, total: 0 })
 
@@ -80,7 +80,7 @@ export default function AdminDashboard() {
     }
   }
 
-  // ── Demo user setup state ─────────────────────────────────────────────
+  // â”€â”€ Demo user setup state â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const [demoSetupStatus, setDemoSetupStatus] = useState(null) // null | 'running' | 'done' | 'error'
   const [demoSetupLog,    setDemoSetupLog]    = useState([])
   const [showCredentials, setShowCredentials] = useState(false)
@@ -100,7 +100,7 @@ export default function AdminDashboard() {
     }
   }
 
-  // ── KPI data ──────────────────────────────────────────────────────────
+  // â”€â”€ KPI data â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const totalUsers        = users.length
   const activeJobs        = jobs.filter(j => j.status === 'open').length
   const totalTransactions = transactions.length
@@ -109,22 +109,22 @@ export default function AdminDashboard() {
   const suspendedUsers    = users.filter(u => u.status === 'suspended').length
   const bannedUsers       = users.filter(u => u.status === 'banned').length
 
-  // ── Activity feed data ────────────────────────────────────────────────
+  // â”€â”€ Activity feed data â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const recentActivity = useMemo(() => [
-    { id: 'a1', icon: '🧑‍💻', text: 'Javier Ruiz completed a contract for ₦1,200', ts: '2 min ago',  type: 'contract' },
-    { id: 'a2', icon: '🚩', text: 'New report on "Manage our faculty Instagram"',   ts: '14 min ago', type: 'report'   },
-    { id: 'a3', icon: '🧑‍🎓', text: 'Chidi Okonkwo joined as a new freelancer',      ts: '1 hr ago',   type: 'user'     },
-    { id: 'a4', icon: '💸', text: 'Wallet funded: ₦15,000 by Adaeze Nwosu',         ts: '2 hr ago',   type: 'wallet'   },
-    { id: 'a5', icon: '⚠️', text: 'Seun Adeyemi account suspended (low trust)',     ts: '3 hr ago',   type: 'admin'    },
-    { id: 'a6', icon: '📋', text: 'New job posted: Mobile app UI design',           ts: '4 hr ago',   type: 'job'      },
-    { id: 'a7', icon: '🚩', text: 'Job "Data pipeline in Python" flagged x3',       ts: '5 hr ago',   type: 'report'   },
-    { id: 'a8', icon: '🧑‍💻', text: 'Fatima Al-Hassan submitted a proposal',          ts: '6 hr ago',   type: 'contract' },
+    { id: 'a1', icon: 'ðŸ§‘â€ðŸ’»', text: 'Javier Ruiz completed a contract for â‚¦1,200', ts: '2 min ago',  type: 'contract' },
+    { id: 'a2', icon: 'ðŸš©', text: 'New report on "Manage our faculty Instagram"',   ts: '14 min ago', type: 'report'   },
+    { id: 'a3', icon: 'ðŸ§‘â€ðŸŽ“', text: 'Chidi Okonkwo joined as a new freelancer',      ts: '1 hr ago',   type: 'user'     },
+    { id: 'a4', icon: 'ðŸ’¸', text: 'Wallet funded: â‚¦15,000 by Adaeze Nwosu',         ts: '2 hr ago',   type: 'wallet'   },
+    { id: 'a5', icon: 'âš ï¸', text: 'Seun Adeyemi account suspended (low trust)',     ts: '3 hr ago',   type: 'admin'    },
+    { id: 'a6', icon: 'ðŸ“‹', text: 'New job posted: Mobile app UI design',           ts: '4 hr ago',   type: 'job'      },
+    { id: 'a7', icon: 'ðŸš©', text: 'Job "Data pipeline in Python" flagged x3',       ts: '5 hr ago',   type: 'report'   },
+    { id: 'a8', icon: 'ðŸ§‘â€ðŸ’»', text: 'Fatima Al-Hassan submitted a proposal',          ts: '6 hr ago',   type: 'contract' },
   ], [])
 
-  // ── User actions ──────────────────────────────────────────────────────
+  // â”€â”€ User actions â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   function handleUserAction(userId, action) {
     if (confirmRow?.id === userId && confirmRow?.action === action) {
-      // Confirmed — apply the action
+      // Confirmed â€” apply the action
       setUsers(prev => prev.map(u => {
         if (u.id !== userId) return u
         const newStatus = action === 'ban' ? 'banned' : action === 'suspend' ? 'suspended' : 'active'
@@ -138,7 +138,7 @@ export default function AdminDashboard() {
 
   function cancelConfirm() { setConfirmRow(null) }
 
-  // ── Report actions ────────────────────────────────────────────────────
+  // â”€â”€ Report actions â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   function handleReportAction(reportId, action) {
     setReports(prev => prev.map(r => {
       if (r.id !== reportId) return r
@@ -148,7 +148,7 @@ export default function AdminDashboard() {
     }))
   }
 
-  // ── Filtered users ────────────────────────────────────────────────────
+  // â”€â”€ Filtered users â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const filteredUsers = users.filter(u => {
     const matchSearch = u.name.toLowerCase().includes(userSearch.toLowerCase()) ||
                         u.email.toLowerCase().includes(userSearch.toLowerCase())
@@ -162,7 +162,7 @@ export default function AdminDashboard() {
 
   return (
     <div className={styles.page}>
-      {/* ── Sidebar ──────────────────────────────────────────────────── */}
+      {/* â”€â”€ Sidebar â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       <aside className={styles.sidebar}>
         <div className={styles.sidebarLogo}>
           <span className={styles.logoText}>nexus</span>
@@ -198,7 +198,7 @@ export default function AdminDashboard() {
               <p className={styles.adminRole}>Super Administrator</p>
             </div>
           </div>
-          {/* ── Seed button ── */}
+          {/* â”€â”€ Seed button â”€â”€ */}
           <button
             className={styles.seedBtn}
             onClick={handleSeed}
@@ -206,27 +206,27 @@ export default function AdminDashboard() {
             style={{ marginTop: 12 }}
           >
             {seedStatus === 'running'
-              ? `Seeding… ${seedProgress.done}/${seedProgress.total}`
-              : seedStatus === 'done'    ? '✓ Demo data seeded'
-              : seedStatus === 'already' ? '✓ Already seeded'
-              : seedStatus === 'error'   ? '✗ Seed failed — retry'
-              : '⚡ Seed Demo Data'}
+              ? `Seedingâ€¦ ${seedProgress.done}/${seedProgress.total}`
+              : seedStatus === 'done'    ? 'âœ“ Demo data seeded'
+              : seedStatus === 'already' ? 'âœ“ Already seeded'
+              : seedStatus === 'error'   ? 'âœ— Seed failed â€” retry'
+              : 'âš¡ Seed Demo Data'}
           </button>
 
-          {/* ── Demo Users button ── */}
+          {/* â”€â”€ Demo Users button â”€â”€ */}
           <button
             className={styles.seedBtn}
             onClick={handleDemoSetup}
             disabled={demoSetupStatus === 'running'}
             style={{ marginTop: 8, background: demoSetupStatus === 'done' ? 'var(--success, #16a34a)' : demoSetupStatus === 'error' ? 'var(--danger, #dc2626)' : '#1d4ed8' }}
           >
-            {demoSetupStatus === 'running' ? '⏳ Setting up…'
-              : demoSetupStatus === 'done'  ? '✓ Demo Users Ready'
-              : demoSetupStatus === 'error' ? '✗ Setup Failed — retry'
-              : '👤 Setup Demo Users'}
+            {demoSetupStatus === 'running' ? 'â³ Setting upâ€¦'
+              : demoSetupStatus === 'done'  ? 'âœ“ Demo Users Ready'
+              : demoSetupStatus === 'error' ? 'âœ— Setup Failed â€” retry'
+              : 'ðŸ‘¤ Setup Demo Users'}
           </button>
 
-          {/* ── Credentials box ── */}
+          {/* â”€â”€ Credentials box â”€â”€ */}
           {showCredentials && (
             <div style={{
               marginTop: 10, padding: '10px 12px',
@@ -235,16 +235,16 @@ export default function AdminDashboard() {
               lineHeight: 1.8, color: 'rgba(255,255,255,0.85)',
             }}>
               <p style={{ fontWeight: 700, marginBottom: 4, color: '#fff' }}>Demo Credentials</p>
-              <p>🧑‍💼 <strong>Client</strong></p>
+              <p>ðŸ§‘â€ðŸ’¼ <strong>Client</strong></p>
               <p style={{ color: '#86efac' }}>{DEMO_CREDENTIALS.client.email}</p>
               <p style={{ color: '#fde68a', marginBottom: 6 }}>pw: {DEMO_CREDENTIALS.client.password}</p>
-              <p>💻 <strong>Freelancer</strong></p>
+              <p>ðŸ’» <strong>Freelancer</strong></p>
               <p style={{ color: '#86efac' }}>{DEMO_CREDENTIALS.freelancer.email}</p>
               <p style={{ color: '#fde68a' }}>pw: {DEMO_CREDENTIALS.freelancer.password}</p>
             </div>
           )}
 
-          {/* ── Setup log (collapsible) ── */}
+          {/* â”€â”€ Setup log (collapsible) â”€â”€ */}
           {demoSetupLog.length > 0 && (
             <details style={{ marginTop: 6 }}>
               <summary style={{ fontSize: 10, color: 'rgba(255,255,255,0.4)', cursor: 'pointer' }}>Show log ({demoSetupLog.length} lines)</summary>
@@ -256,10 +256,10 @@ export default function AdminDashboard() {
         </div>
       </aside>
 
-      {/* ── Main content ─────────────────────────────────────────────── */}
+      {/* â”€â”€ Main content â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       <main className={styles.main}>
 
-        {/* ── OVERVIEW TAB ─────────────────────────────────────────── */}
+        {/* â”€â”€ OVERVIEW TAB â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
         {activeTab === 'overview' && (
           <div className={styles.tabContent}>
             <div className={styles.pageHeader}>
@@ -280,7 +280,7 @@ export default function AdminDashboard() {
                 <div>
                   <p className={styles.kpiValue}>{totalUsers.toLocaleString()}</p>
                   <p className={styles.kpiLabel}>Total Users</p>
-                  <p className={styles.kpiSub}>{activeUsers} active · {suspendedUsers} suspended · {bannedUsers} banned</p>
+                  <p className={styles.kpiSub}>{activeUsers} active Â· {suspendedUsers} suspended Â· {bannedUsers} banned</p>
                 </div>
               </div>
               <div className={`${styles.kpiCard} ${styles.kpiGreen}`}>
@@ -383,13 +383,13 @@ export default function AdminDashboard() {
           </div>
         )}
 
-        {/* ── USER MANAGEMENT TAB ──────────────────────────────────────  */}
+        {/* â”€â”€ USER MANAGEMENT TAB â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€  */}
         {activeTab === 'users' && (
           <div className={styles.tabContent}>
             <div className={styles.pageHeader}>
               <div>
                 <h1 className={styles.pageTitle}>User Management</h1>
-                <p className={styles.pageSubtitle}>{totalUsers} registered users · manage access and trust</p>
+                <p className={styles.pageSubtitle}>{totalUsers} registered users Â· manage access and trust</p>
               </div>
             </div>
 
@@ -398,7 +398,7 @@ export default function AdminDashboard() {
               <input
                 id="admin-user-search"
                 className={styles.searchInput}
-                placeholder="Search by name or email…"
+                placeholder="Search by name or emailâ€¦"
                 value={userSearch}
                 onChange={e => setUserSearch(e.target.value)}
               />
@@ -514,13 +514,13 @@ export default function AdminDashboard() {
           </div>
         )}
 
-        {/* ── REPORTED JOBS TAB ────────────────────────────────────────  */}
+        {/* â”€â”€ REPORTED JOBS TAB â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€  */}
         {activeTab === 'reports' && (
           <div className={styles.tabContent}>
             <div className={styles.pageHeader}>
               <div>
                 <h1 className={styles.pageTitle}>Reported Jobs</h1>
-                <p className={styles.pageSubtitle}>{reports.length} flagged items · review and moderate content</p>
+                <p className={styles.pageSubtitle}>{reports.length} flagged items Â· review and moderate content</p>
               </div>
               <div className={styles.warningPill}>
                 <Icon.Flag />
@@ -563,13 +563,13 @@ export default function AdminDashboard() {
                         </div>
                         <div>
                           <p className={styles.reportTitle}>{r.title}</p>
-                          <p className={styles.reportMeta}>{r.category} · Reported {r.reportedAt} by {r.reporter}</p>
+                          <p className={styles.reportMeta}>{r.category} Â· Reported {r.reportedAt} by {r.reporter}</p>
                         </div>
                       </div>
                       <div className={styles.reportRight}>
-                        <span className={styles.reportCount}>×{r.reportCount} reports</span>
+                        <span className={styles.reportCount}>Ã—{r.reportCount} reports</span>
                         <span className={`${styles.reportStatus} ${styles[`reportStatus_${r.status}`]}`}>{r.status}</span>
-                        <span className={styles.reportChevron}>{isExpanded ? '▲' : '▼'}</span>
+                        <span className={styles.reportChevron}>{isExpanded ? 'â–²' : 'â–¼'}</span>
                       </div>
                     </div>
 
