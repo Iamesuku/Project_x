@@ -7,6 +7,7 @@ import {
   sendPasswordResetEmail,
   GoogleAuthProvider,
   signInWithPopup,
+  getAdditionalUserInfo
 } from 'firebase/auth'
 import {
   doc,
@@ -28,22 +29,34 @@ function getInitials(name) {
 }
 
 // ── Write a new user doc + wallet (used on first-time sign-in) ────────────
-async function createUserDoc(uid, { name, email, avatar, role = 'client' }) {
+async function createUserDoc(uid, { name, email, avatar, role }) {
   try {
-    await setDoc(doc(db, 'users', uid), {
-      name,
-      email,
-      avatar,
-      role,
-      bio:          '',
-      location:     '',
-      skills:       [],
-      hourlyRate:   0,
-      rating:       0,
-      reviewCount:  0,
-      completedJobs: 0,
-      memberSince:  serverTimestamp(),
-    }, { merge: true })   // merge so re-logins don't wipe existing data
+    const userRef = doc(db, 'users', uid)
+    const existing = await getDoc(userRef)
+    
+    if (!existing.exists()) {
+      await setDoc(userRef, {
+        name,
+        email,
+        avatar,
+        role: role || 'client',
+        bio:          '',
+        location:     '',
+        skills:       [],
+        hourlyRate:   0,
+        rating:       0,
+        reviewCount:  0,
+        completedJobs: 0,
+        memberSince:  serverTimestamp(),
+      })
+    } else {
+      // Just update basic info for returning users, never overwrite role
+      await setDoc(userRef, {
+        name,
+        email,
+        avatar
+      }, { merge: true })
+    }
   } catch (err) {
     console.warn('[NEXUS] Could not write user profile to Firestore:', err.message)
   }
@@ -51,8 +64,8 @@ async function createUserDoc(uid, { name, email, avatar, role = 'client' }) {
   try {
     // Only seed wallet if it doesn't already exist
     const walletRef = doc(db, 'wallets', uid)
-    const existing  = await getDoc(walletRef)
-    if (!existing.exists()) {
+    const existingWallet = await getDoc(walletRef)
+    if (!existingWallet.exists()) {
       await setDoc(walletRef, {
         balance:  600,
         escrow:   0,
@@ -70,16 +83,26 @@ async function createUserDoc(uid, { name, email, avatar, role = 'client' }) {
  * user doc so data is always available after login.
  * @returns {import('firebase/auth').User}
  */
-export async function signInWithGoogle() {
+export async function signInWithGoogle(role, mode) {
   const provider = new GoogleAuthProvider()
   provider.setCustomParameters({ prompt: 'select_account' })
   const cred = await signInWithPopup(auth, provider)
+  const info = getAdditionalUserInfo(cred)
   const { uid, displayName, email, photoURL } = cred.user
+
+  if (info.isNewUser && mode === 'login') {
+    // User tried to log in with Google but they don't have an account
+    await cred.user.delete()
+    const err = new Error('No account found with this Google email. Please sign up to choose your role.')
+    err.code = 'auth/user-not-found-google'
+    throw err
+  }
 
   await createUserDoc(uid, {
     name:   displayName || email?.split('@')[0] || 'User',
     email:  email || '',
     avatar: photoURL || getInitials(displayName || email || 'U'),
+    role:   role || 'client'
   })
 
   return cred.user
