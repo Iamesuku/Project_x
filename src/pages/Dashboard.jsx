@@ -415,7 +415,7 @@ export default function Dashboard() {
                       const pos = tx.amount > 0
                       return (
                         <div key={tx.id} className={styles.miniRow}>
-                          <div className={`${styles.txDot} ${pos ? styles.txDotGreen : styles.txDotOrange}`}/>
+                          <div className={`${styles.txDot} ${dotColour}`}/>
                           <div className={styles.miniInfo}>
                             <p className={styles.miniTitle}>{tx.desc}</p>
                             <p className={styles.miniMeta}>{tx.date} · {tx.status}</p>
@@ -624,10 +624,20 @@ export default function Dashboard() {
                 ? <div className={styles.bigEmpty}><p className={styles.bigEmptyTitle}>No activity yet</p></div>
                 : transactions.map(tx => {
                   const pos = tx.amount > 0
-                  const typeMap = {deposit:'Added funds',withdrawal:'Withdrew funds',escrow:'Funded escrow',release:'Released payment'}
+                  const typeMap = {
+                    deposit:    'Added funds',
+                    withdrawal: 'Withdrew funds',
+                    escrow:     'Funded escrow',
+                    release:    'Released payment',
+                  }
+                  // Colour: green for deposit/release, red for withdrawal, orange for escrow
+                  const dotColour = tx.type === 'withdrawal' ? styles.txDotRed
+                    : tx.type === 'escrow'    ? styles.txDotOrange
+                    : styles.txDotGreen
                   return (
                     <div key={tx.id} className={styles.actRow}>
-                      <div className={`${styles.actDot} ${pos?styles.actGreen:styles.actOrange}`}/>
+                      <div className={`${styles.actDot} ${dotColour === styles.txDotRed ? styles.actRed : dotColour === styles.txDotOrange ? styles.actOrange : styles.actGreen}`}/>
+
                       <div className={styles.actInfo}>
                         <p className={styles.actTitle}>{typeMap[tx.type]||tx.type}</p>
                         <p className={styles.actDesc}>{tx.desc}</p>

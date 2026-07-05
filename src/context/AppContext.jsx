@@ -2,7 +2,7 @@ import { createContext, useContext, useState, useEffect, useCallback, useRef } f
 import {
   doc, getDoc, setDoc, updateDoc,
   collection, getDocs, addDoc, onSnapshot,
-  query, where, orderBy, serverTimestamp, deleteDoc
+  query, where, orderBy, limit, serverTimestamp, deleteDoc
 } from 'firebase/firestore'
 import { signOut } from 'firebase/auth'
 import { ref, onValue } from 'firebase/database'
@@ -172,21 +172,21 @@ export function AppProvider({ children }) {
       setFirebaseUser(fbUser ?? null)
 
       if (!fbUser) {
-        // Logged out — clear all real user data
+        // Logged out — clear all real user data, keep seed demo content
         setIsLoggedIn(false)
         setUserState({ id: null, name: '', avatar: '', role: 'client', email: '', memberSince: '', bio: '', location: '', skills: [], hourlyRate: 0 })
-        setWallet({ balance: 0, escrow: 0, earned: 0, currency: 'NGN' })
-        setTransactions([])
+        setWallet({ balance: 600, escrow: 200, earned: 120, currency: 'NGN' })
+        setTransactions(SEED_TRANSACTIONS)  // restore seed data so Browse/Demo still works
         setJobs(SEED_JOBS)          // keep seed jobs so Browse page has content
-        setContracts([])
+        setContracts(SEED_CONTRACTS)
         setProposals({})
-        setNotifications([])
+        setNotifications(SEED_NOTIFICATIONS)
         setFreelancers(SEED_FREELANCERS)
         setSavedJobs([])
         setSavedFreelancers([])
         setReviews([])
         setThreads([])
-        setDisputes([])
+        setDisputes(SEED_DISPUTES)
         if (unsubThreads.current) { unsubThreads.current(); unsubThreads.current = null }
         if (unsubNotifs.current)  { unsubNotifs.current();  unsubNotifs.current  = null }
         if (unsubJobs.current)    { unsubJobs.current();    unsubJobs.current    = null }
@@ -259,6 +259,22 @@ export function AppProvider({ children }) {
         const walletSnap = await getDoc(doc(db, 'wallets', fbUser.uid))
         if (walletSnap.exists()) setWallet(walletSnap.data())
       } catch (e) { console.warn('Error loading wallet:', e) }
+
+      // ── Load transaction history (last 100, newest first) ──
+      try {
+        const txSnap = await getDocs(
+          query(
+            collection(db, 'wallets', fbUser.uid, 'transactions'),
+            orderBy('createdAt', 'desc'),
+            limit(100)
+          )
+        )
+        if (!txSnap.empty) {
+          const fsTx = txSnap.docs.map(d => ({ ...d.data(), id: d.id }))
+          setTransactions(fsTx)
+        }
+        // If no Firestore transactions yet, seed data remains (set at init)
+      } catch (e) { console.warn('Error loading transactions:', e) }
 
       // ── Load jobs real-time ──
       try {
@@ -438,6 +454,9 @@ export function AppProvider({ children }) {
 
 
   // ── Wallet ─────────────────────────────────────────────────────────────
+  // Derive currency symbol from wallet state
+  const walletSym = wallet.currency === 'NGN' ? '₦' : '$'
+
   function persistWallet(updated) {
     setWallet(updated)
     if (firebaseUser) {
@@ -445,13 +464,25 @@ export function AppProvider({ children }) {
     }
   }
 
+  // Persist a single transaction to Firestore sub-collection
+  function persistTx(tx) {
+    if (firebaseUser) {
+      addDoc(
+        collection(db, 'wallets', firebaseUser.uid, 'transactions'),
+        { ...tx, createdAt: serverTimestamp() }
+      ).catch(() => {})
+    }
+  }
+
   function depositFunds(amount) {
     const amt = parseFloat(amount)
     if (!amt || amt <= 0) return
     persistWallet({ ...wallet, balance: +(wallet.balance + amt).toFixed(2) })
-    setTransactions(p => [{ id:uid(), type:'deposit', amount:amt, desc:'Wallet funded', date:today(), status:'completed' }, ...p])
-    addNotif(`₦${amt.toFixed(2)} added to your wallet`, '/wallet')
-    toast(`₦${amt.toFixed(2)} added to wallet`)
+    const tx = { id:uid(), type:'deposit', amount:amt, desc:'Wallet funded', date:today(), status:'completed' }
+    setTransactions(p => [tx, ...p])
+    persistTx(tx)
+    addNotif(`${walletSym}${amt.toFixed(2)} added to your wallet`, '/wallet')
+    toast(`${walletSym}${amt.toFixed(2)} added to wallet`)
   }
 
   function withdrawFunds(amount) {
@@ -459,24 +490,32 @@ export function AppProvider({ children }) {
     if (!amt || amt <= 0) return
     if (amt > wallet.balance) { toast('Insufficient balance', 'error'); return }
     persistWallet({ ...wallet, balance: +(wallet.balance - amt).toFixed(2) })
-    setTransactions(p => [{ id:uid(), type:'withdrawal', amount:-amt, desc:'Funds withdrawn', date:today(), status:'completed' }, ...p])
-    toast(`₦${amt.toFixed(2)} withdrawn`)
+    const tx = { id:uid(), type:'withdrawal', amount:-amt, desc:'Funds withdrawn to bank account', date:today(), status:'completed' }
+    setTransactions(p => [tx, ...p])
+    persistTx(tx)
+    addNotif(`${walletSym}${amt.toFixed(2)} withdrawn from your wallet`, '/wallet')
+    toast(`${walletSym}${amt.toFixed(2)} withdrawn successfully`)
   }
 
   function fundEscrow(jobId, amount, jobTitle) {
     const amt = parseFloat(amount)
     if (amt > wallet.balance) { toast('Insufficient balance to fund escrow', 'error'); return false }
     persistWallet({ ...wallet, balance: +(wallet.balance - amt).toFixed(2), escrow: +(wallet.escrow + amt).toFixed(2) })
-    setTransactions(p => [{ id:uid(), type:'escrow', amount:-amt, desc:`Escrow: ${jobTitle}`, date:today(), status:'pending' }, ...p])
-    toast(`₦${amt.toFixed(2)} held in escrow`)
+    const tx = { id:uid(), type:'escrow', amount:-amt, desc:`Escrow: ${jobTitle}`, date:today(), status:'pending' }
+    setTransactions(p => [tx, ...p])
+    persistTx(tx)
+    toast(`${walletSym}${amt.toFixed(2)} held in escrow`)
     return true
   }
 
   // freelancerId is passed explicitly to avoid stale closure on the contracts array
   function releaseEscrow(amount, jobTitle, contractId, freelancerId) {
     const amt = parseFloat(amount)
+    const sym = walletSym
     persistWallet({ ...wallet, escrow: +Math.max(0, wallet.escrow - amt).toFixed(2), earned: +(wallet.earned + amt).toFixed(2) })
-    setTransactions(p => [{ id:uid(), type:'release', amount:amt, desc:`Payment released: ${jobTitle}`, date:today(), status:'completed' }, ...p])
+    const releaseTx = { id:uid(), type:'release', amount:amt, desc:`Payment released: ${jobTitle}`, date:today(), status:'completed' }
+    setTransactions(p => [releaseTx, ...p])
+    persistTx(releaseTx)
     if (contractId) {
       setContracts(p => p.map(c => c.id === contractId ? { ...c, status:'completed', completedDate:today() } : c))
       if (firebaseUser) {
@@ -496,7 +535,7 @@ export function AppProvider({ children }) {
           // Notify the freelancer
           addDoc(collection(db, 'notifications'), {
             userId: fId,
-            text:   `₦${amt.toFixed(2)} has been released to your wallet for "${jobTitle}".`,
+            text:   `${sym}${amt.toFixed(2)} has been released to your wallet for "${jobTitle}".`,
             read:   false,
             ts:     serverTimestamp(),
             link:   '/wallet',
@@ -504,8 +543,8 @@ export function AppProvider({ children }) {
         }
       }
     }
-    addNotif(`₦${amt.toFixed(2)} released for "${jobTitle}"`, '/wallet')
-    toast(`₦${amt.toFixed(2)} released to freelancer`)
+    addNotif(`${sym}${amt.toFixed(2)} released for "${jobTitle}"`, '/wallet')
+    toast(`${sym}${amt.toFixed(2)} released to freelancer`)
   }
 
   // ── Jobs ───────────────────────────────────────────────────────────────

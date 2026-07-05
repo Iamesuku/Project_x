@@ -53,9 +53,13 @@ function TicketTimeline({ status }) {
   )
 }
 
-function TicketCard({ ticket, expanded, onToggle }) {
+function TicketCard({ ticket, expanded, onToggle, contracts = [] }) {
   const sm = STATUS_META[ticket.status] || STATUS_META.open
   const pm = PRIORITY_META[ticket.priority] || PRIORITY_META.medium
+
+  // Look up the contract to find the freelancerId for direct messaging
+  const contract = contracts.find(c => c.id === ticket.contractId)
+  const freelancerId = contract?.freelancerId
 
   return (
     <article className={`${styles.ticketCard} ${expanded ? styles.ticketCardExpanded : ''}`}>
@@ -162,8 +166,11 @@ function TicketCard({ ticket, expanded, onToggle }) {
               {/* Actions */}
               {ticket.status !== 'resolved' && ticket.status !== 'closed' && (
                 <div className={styles.ticketActions}>
-                  <Link to={`/messages`} className={styles.ticketActionBtn}>
-                    Message freelancer
+                  <Link
+                    to={freelancerId ? `/messages/${freelancerId}` : '/messages'}
+                    className={styles.ticketActionBtn}
+                  >
+                    Message freelancer →
                   </Link>
                 </div>
               )}
@@ -176,7 +183,7 @@ function TicketCard({ ticket, expanded, onToggle }) {
 }
 
 export default function Support() {
-  const { disputes, user } = useApp()
+  const { disputes, user, contracts } = useApp()
   const [filter, setFilter]     = useState('all')
   const [expandedId, setExpandedId] = useState(null)
 
@@ -324,6 +331,7 @@ export default function Support() {
               <TicketCard
                 key={ticket.id}
                 ticket={ticket}
+                contracts={contracts}
                 expanded={expandedId === ticket.id}
                 onToggle={() => setExpandedId(expandedId === ticket.id ? null : ticket.id)}
               />

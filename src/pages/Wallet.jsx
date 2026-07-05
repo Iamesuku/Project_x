@@ -33,7 +33,7 @@ function Modal({ title, onClose, children }) {
 
 // ── Amount modal ─────────────────────────────────────────────────────────
 // Bug fixed: sym is now passed as a prop instead of relying on parent scope
-function AmountModal({ title, label, actionLabel, onAction, onClose, max, sym }) {
+function AmountModal({ title, label, actionLabel, onAction, onClose, max, sym, note }) {
   const [amount, setAmount] = useState('')
   const [err,    setErr]    = useState('')
   const [busy,   setBusy]   = useState(false)
@@ -92,6 +92,10 @@ function AmountModal({ title, label, actionLabel, onAction, onClose, max, sym })
           <p className={styles.maxHint}>
             Available: <strong>{sym}{max.toFixed(2)}</strong>
           </p>
+        )}
+
+        {note && (
+          <p className={styles.withdrawNote}>{note}</p>
         )}
 
         <button
@@ -325,6 +329,7 @@ export default function Wallet() {
           onAction={withdrawFunds}
           onClose={() => setModal(null)}
           max={wallet.balance}
+          note="In simulation mode, funds are removed from your balance. In production, they would be sent to your registered bank account within 1–2 business days."
         />
       )}
       {modal === 'release' && (

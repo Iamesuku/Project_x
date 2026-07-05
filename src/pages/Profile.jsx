@@ -11,7 +11,7 @@ const SKILLS_OPTS = ['React','Node.js','Python','Figma','UI/UX Design','Branding
   'Flutter','Swift','Legal','Compliance','HR','Project Management','Excel','SQL','Tableau']
 
 export default function Profile() {
-  const { user, updateUser, logout, wallet } = useApp()
+  const { user, updateUser, logout, wallet, toast } = useApp()
   const navigate = useNavigate()
   const [form, setForm] = useState({
     name:       user.name,
@@ -222,7 +222,12 @@ export default function Profile() {
                         <p className={styles.securityLabel}>{item.label}</p>
                         <p className={styles.securityValue}>{item.value}</p>
                       </div>
-                      <button className={styles.securityAction}>{item.action}</button>
+                      <button
+                        className={styles.securityAction}
+                        onClick={() => toast('This feature is coming soon.', 'info')}
+                      >
+                        {item.action}
+                      </button>
                     </div>
                   ))}
                 </div>

@@ -327,7 +327,10 @@ export default function Contracts() {
             <p className={styles.eyebrow}>Project management</p>
             <h1 className={styles.title}>My <em>Contracts</em></h1>
           </div>
-          <Link to="/post-job" className={styles.newJobBtn}>+ Post a new job</Link>
+          {isClient
+            ? <Link to="/post-job" className={styles.newJobBtn}>+ Post a new job</Link>
+            : <Link to="/jobs"     className={styles.newJobBtn}>Browse jobs →</Link>
+          }
         </div>
 
         {/* Stats — animated counters */}
@@ -355,8 +358,15 @@ export default function Contracts() {
         {filtered.length === 0 ? (
           <div className={styles.empty}>
             <p className={styles.emptyTitle}>No contracts yet</p>
-            <p className={styles.emptyBody}>Post a job and accept a freelancer's proposal to create your first contract.</p>
-            <Link to="/post-job" className={styles.emptyBtn}>Post a job →</Link>
+            <p className={styles.emptyBody}>
+              {isClient
+                ? "Post a job and accept a freelancer's proposal to create your first contract."
+                : "Submit proposals to open jobs and get hired to create your first contract."}
+            </p>
+            {isClient
+              ? <Link to="/post-job" className={styles.emptyBtn}>Post a job →</Link>
+              : <Link to="/jobs"     className={styles.emptyBtn}>Browse jobs →</Link>
+            }
           </div>
         ) : (
           <div className={styles.list}>

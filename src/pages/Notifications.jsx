@@ -56,14 +56,15 @@ const RICH_SEED = [
 
 export default function Notifications() {
   const { notifications, markNotifsRead, clearNotif } = useApp()
-  const [filter,      setFilter]      = useState('all')
-  const [localRead,   setLocalRead]   = useState({})   // track individual "mark as read" per id
+  const [filter,        setFilter]        = useState('all')
+  const [localRead,     setLocalRead]     = useState({})   // track individual "mark as read" per id
+  const [dismissedSeeds, setDismissedSeeds] = useState(new Set()) // seed notif IDs dismissed this session
 
-  // Merge live notifications + rich seed (deduplicated by id)
+  // Merge live notifications + rich seed (deduplicated by id, excluding dismissed seeds)
   const liveIds = new Set(notifications.map(n => n.id))
   const merged  = [
     ...notifications,
-    ...RICH_SEED.filter(sn => !liveIds.has(sn.id)),
+    ...RICH_SEED.filter(sn => !liveIds.has(sn.id) && !dismissedSeeds.has(sn.id)),
   ]
 
   // Apply localRead overrides
@@ -91,7 +92,12 @@ export default function Notifications() {
   }
 
   function handleClear(id) {
+    // If it's a live notification, remove from context
     clearNotif(id)
+    // If it's a seed notification, track it as dismissed locally
+    if (RICH_SEED.some(sn => sn.id === id)) {
+      setDismissedSeeds(prev => new Set([...prev, id]))
+    }
     setLocalRead(p => { const c = { ...p }; delete c[id]; return c })
   }
 
